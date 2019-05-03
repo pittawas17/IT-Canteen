@@ -10,6 +10,8 @@ class UserProfile(models.Model):
     register_date_time = models.DateTimeField(null=True)
     status = models.BooleanField(default=False)
     is_validated = models.BooleanField(default=False)
+    real_first_name = models.TextField(null=True)
+    real_last_name = models.TextField(null=True)
 
 
 def create_user_profile(sender, instance, created, **kwargs):

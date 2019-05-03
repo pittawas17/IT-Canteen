@@ -35,7 +35,12 @@ def register(request):
         form = forms.RegisterForm(request.POST)
         if form.is_valid():
             user = User.objects.get(id=request.user.id)
+            user.userprofile.real_first_name = form.cleaned_data.get('real_first_name')
+            user.userprofile.real_last_name = form.cleaned_data.get('real_last_name')
+            user.userprofile.phone_number = form.cleaned_data.get('phone_number')
+            user.userprofile.email = form.cleaned_data.get('email')
             user.save()
+            user.userprofile.save()
             current_site = get_current_site(request)
             mail_subject = 'Activate your account.'
             message = render_to_string('accounts/acc_active_email.html', {
