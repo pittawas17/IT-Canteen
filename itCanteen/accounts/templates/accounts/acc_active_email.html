@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+
     {% autoescape off %}
     Hi {{ user.first_name }},
-    Please click on the link to confirm your registration,
+    You've received this email because your email address was used for registering an ITCanteen account.
+    Please follow this link to confirm your account and start using our website.
     http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
     {% endautoescape %}
-</body>
-</html>
