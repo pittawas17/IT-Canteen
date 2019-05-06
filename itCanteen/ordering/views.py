@@ -1,14 +1,14 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Sum
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import datetime
-
 
 # Create your views here.
 from ordering import forms
-from ordering.forms import OrderModelForm
-from ordering.models import Shop, OrderItem, Order
+from ordering.forms import EditOrderModelForm
+from ordering.models import Shop, OrderItem, Order, Menu, ShopQueue
 
 
 @login_required()
@@ -33,23 +33,107 @@ def customer_main(request):
 
 
 @login_required()
-def order(request):
+def select_shop(request):
+    shop_list = Shop.objects.all()
+    context = {
+        'shop_list': shop_list
+    }
+    return render(request, template_name='ordering/select_shop.html', context=context)
+
+
+@login_required()
+def selected(request, shop_id):
+    shop = Shop.objects.get(id=shop_id)
+    menu_list = Menu.objects.filter(menu_of_id=shop_id).filter(is_daily_menu=True)
+    context = {
+        'shop': shop,
+        'menu_list': menu_list
+    }
+    return render(request, template_name="ordering/select_menu.html", context=context)
+
+
+@login_required()
+def edit_order(request, menu_of, menu_id):
+    shop = Shop.objects.get(id=menu_of)
+    menu = Menu.objects.get(id=menu_id)
+    user = User.objects.get(id=request.user.id)
+    shop_queue = shop.shopqueue
     if request.method == 'POST':
-        form = forms.OrderModelForm(request.POST)
+        form = forms.EditOrderModelForm(request.POST)
         if form.is_valid():
-            shop = Shop.objects.get(shop_name='10Pochana')
-            user = User.objects.get(id=request.user.id)
-            Order.objects.create(
-                user=user,
-                order_of=user.userprofile.history,
-                order_datetime=datetime.datetime.now()
-            )
+            order_datetime = datetime.datetime.now()
+            add_queue(shop)
+            if menu.special_price:
+                if request.POST.get('size') == "01":
+                    price = menu.normal_price
+                else:
+                    price = menu.special_price
+            else:
+                price = menu.normal_price
             OrderItem.objects.create(
-                menu=form.cleaned_data.get('menu'),
-                special_requirement=form.cleaned_data.get('special_requiremenr')
+                menu=menu,
+                queue=shop_queue,
+                order=user.userprofile.order,
+                order_datetime=order_datetime,
+                this_queue=shop_queue.current_queue,
+                special_requirement=form.cleaned_data.get('special_requirement'),
+                price=price
             )
-            form.save()
-            return HttpResponse('Please confirm your email address to complete the registration')
+            order_item = OrderItem.objects.get(menu=menu, queue=shop_queue, order=user.userprofile.order, order_datetime=order_datetime)
+            order_item.wait = order_item.this_queue - shop_queue.last_queue
+            order_item.save()
+            return redirect('order_status')
     else:
-        form = OrderModelForm()
-    return render(request, 'accounts/register.html', {'form': form})
+        form = EditOrderModelForm()
+    context = {
+        'shop': shop,
+        'menu': menu,
+        'forms': form
+    }
+    return render(request, 'ordering/edit_order.html', context=context)
+
+
+def add_queue(shop):
+    shop_queue = shop.shopqueue
+    shop_queue.current_queue += 1
+    shop_queue.queue = shop_queue.current_queue - shop_queue.last_queue
+
+
+def remove_queue(shop, rem_queue):
+    shop_queue = shop.shopqueue
+    shop_queue.current_queue -= 1
+    for i in Order.objects.get(shop_queue=shop_queue):
+        if i > rem_queue:
+            Order.objects.get(this_queue=i).this_queue -= 1
+    shop_queue.queue = shop_queue.current_queue - shop_queue.last_queue
+    update_wait(shop)
+
+
+def queue_done(shop):
+    shop_queue = shop.shopqueue
+    shop_queue.last_queue += 1
+    shop_queue.queue = shop_queue.current_queue - shop_queue.last_queue
+    update_wait(shop)
+
+
+def update_wait(shop):
+    shop_queue = shop.shopqueue
+    order_in_shop = OrderItem.objects.get(queue=shop_queue)
+    for i in order_in_shop:
+        i.wait = i.this_queue - shop_queue.last_queue
+
+
+@login_required()
+def show_order_status(request):
+    user = User.objects.get(id=request.user.id).userprofile
+    order = user.order
+    order_item = OrderItem.objects.filter(order=order)
+    order.total_price = (order_item.aggregate(Sum('price')))['price__sum']
+    order.save()
+    context = {
+        'order': order,
+        'order_item': order_item,
+    }
+    print(order)
+    print(order_item)
+    return render(request, 'ordering/order_status.html', context=context)

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Menu</title>
+</head>
+<body>
+    <h1>Select Menu</h1>
+    <ul>
+        <h2>{{ shop.shop_name }}</h2>
+        {% for menu in menu_list %}
+        <a href="{% url 'edit_order' menu_of=shop.id menu_id=menu.id %}">
+            <li>[ {{ menu.get_menu_type_display }} ] {{ menu.menu_name }}<small style="margin-left: 20px">คำอธิบาย: {{ menu.description }}</small></li>
+        </a>
+        {% endfor %}
+    </ul>
+</body>
+</html>

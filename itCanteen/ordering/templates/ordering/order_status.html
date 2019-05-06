@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order: Status</title>
+</head>
+<body>
+  <h1>Order Status</h1>
+  <h2>Customer: {{ order.user }}</h2>
+  {% for item in order_item %}
+  <div style="border: 1px solid black;padding: 20px;margin: 20px">
+      <p>Shop: {{ item.menu.menu_of }}</p>
+      <p>Menu: {{ item.menu }}</p>
+      <p>Special Requirement: {{ item.special_requirement }}</p>
+      {% if item.wait > 0 %}
+          <p>Queue: {{ item.wait }} more queue(s)</p>
+      {% else %}
+          <p>Queue: This order is ready. Please go to {{ item.menu.menu_of }}</p>
+      {% endif %}
+      <p>Price: {{ item.price }} Baht</p>
+      <p></p>
+  </div>
+  {% endfor %}
+  <p>Total: {{ order.total_price }} Baht</p>
+</body>
+</html>

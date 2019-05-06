@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf_token" content="{{ csrf_token }}">
+    <title>Edit Order</title>
+</head>
+<body>
+    <h1>Edit Order</h1>
+    {% block content %}
+    <form method="POST">
+    {% csrf_token %}
+        <h2>Menu from: {{ shop.shop_name }}</h2>
+        <h3>Menu: {{ menu.menu_name }}</h3>
+        <h4>Description: {{ menu.description }}</h4>
+        <h4> Price: </h4>
+        {% if menu.special_price %}
+            <input type="radio" name="size" value="01" required> Normal Size: {{ menu.normal_price }} Baht<br>
+            <input type="radio" name="size" value="02"> Special Size: {{ menu.special_price }} Baht<br>
+        {% else %}
+            <p> Normal Size: {{ menu.normal_price }} Baht</p>
+        {% endif %}
+        <h4> Special Requirement: </h4>
+        {{ forms.special_requirement}}
+        <div><button type="submit">Confirm</button></div>
+    </form>
+{% endblock %}
+</body>
+</html>

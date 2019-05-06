@@ -8,9 +8,9 @@ from accounts.models import UserProfile
 from ordering.models import Shop, OrderItem
 
 
-class OrderModelForm(forms.ModelForm):
+class EditOrderModelForm(forms.ModelForm):
     class Meta:
         model = OrderItem
-        fields = ['menu', 'special_requirement']
+        fields = ['special_requirement']
 
 

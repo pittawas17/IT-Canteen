@@ -9,14 +9,14 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 
-from ordering.models import Shop
+from ordering.models import Shop, ShopQueue, Order
 from .tokens import account_activation_token
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 
 # Create your views here.
 
-from accounts.models import User
+from accounts.models import User, History
 
 
 @login_required
@@ -71,22 +71,27 @@ def shop_register(request):
         form = forms.ShopModelForm(request.POST)
         if form.is_valid():
             user = User.objects.get(id=request.user.id)
-            user.userprofile.real_first_name = form.cleaned_data.get('real_first_name')
-            user.userprofile.real_last_name = form.cleaned_data.get('real_last_name')
-            user.userprofile.phone_number = form.cleaned_data.get('phone_number')
-            user.userprofile.email = form.cleaned_data.get('email')
-            user.userprofile.type = '02'
+            user_profile = user.userprofile
+            user_profile.real_first_name = form.cleaned_data.get('real_first_name')
+            user_profile.real_last_name = form.cleaned_data.get('real_last_name')
+            user_profile.phone_number = form.cleaned_data.get('phone_number')
+            user_profile.email = form.cleaned_data.get('email')
+            user_profile.type = '02'
             Shop.objects.create(
-                shop_host=user.userprofile,
+                shop_host=user_profile,
                 shop_name=form.cleaned_data.get('shop_name'),
                 contact1=form.cleaned_data.get('contact1'),
                 contact2=form.cleaned_data.get('contact2'),
                 open_time=form.cleaned_data.get('open_time'),
-                close_time=form.cleaned_data.get('close time')
+                close_time=form.cleaned_data.get('close_time')
             )
             user.save()
-            user.userprofile.save()
-            user.userprofile.shop.save()
+            user_profile.save()
+            user_profile.shop.save()
+            ShopQueue.objects.create(
+                shop=user_profile.shop
+            )
+            user_profile.shop.shopqueue.save()
             current_site = get_current_site(request)
             mail_subject = 'Activate your account.'
             message = render_to_string('accounts/acc_active_email.html', {

@@ -1,9 +1,10 @@
 from django.contrib.auth.models import User
 from django.db import models
-
-# Create your models here.
+from django.db.models.signals import post_save
 
 from accounts.models import UserProfile, History
+
+# Create your models here.
 
 
 class Shop(models.Model):
@@ -60,7 +61,7 @@ class Menu(models.Model):
     is_daily_menu = models.BooleanField(null=False, default=False)
     description = models.TextField(max_length=200, null=True)
     normal_price = models.FloatField(null=False)
-    special_price = models.FloatField(null=False)
+    special_price = models.FloatField(null=True, blank=True)
     FOOD = "01"
     DRINK = "02"
     SNACK = "03"
@@ -85,22 +86,42 @@ class Ingredient(models.Model):
         return self.ingredient_name
 
 
+class ShopQueue(models.Model):
+    shop = models.OneToOneField(Shop, on_delete=models.PROTECT)
+    queue = models.IntegerField(null=False, default=0)
+    current_queue = models.IntegerField(null=False, default=0)
+    last_queue = models.IntegerField(null=False, default=0)
+
+    def __str__(self):
+        return '%s\' Queue' % self.shop
+
+
 class Order(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    order_of = models.ForeignKey(History, on_delete=models.CASCADE, default='99999')
-    order_datetime = models.DateTimeField(null=False)
-    is_confirmed = models.BooleanField(null=False, default=False)
-    price = models.FloatField(null=False, default=0)
+    user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+    total_price = models.FloatField(null=False, default=0)
 
     def __str__(self):
         return '%s\' Order(s)' % self.user
 
 
 class OrderItem(models.Model):
+    queue = models.ForeignKey(ShopQueue, on_delete=models.PROTECT, default='99999')
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
     special_requirement = models.TextField(max_length=100, null=True, blank=True)
+    this_queue = models.IntegerField(null=False, default=999999999)
+    wait = models.IntegerField(null=False, default=99999999)
+    is_confirmed = models.BooleanField(null=False, default=False)
+    price = models.FloatField(null=False, default=0)
+    order_datetime = models.DateTimeField(null=True)
 
     def __str__(self):
         return '%s (%s)' % (self.order, self.menu)
 
+
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Order.objects.create(user=instance)
+
+
+post_save.connect(create_user_profile, sender=UserProfile)

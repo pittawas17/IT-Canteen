@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Shop</title>
+</head>
+<body>
+    <h1>Select Shop</h1>
+    <ul>
+        {% for shop in shop_list %}
+            <a href="{% url 'selected' shop_id=shop.id %}">
+                <li>{{ shop.shop_name }}</li>
+            </a>
+        {% endfor %}
+    </ul>
+</body>
+</html>
