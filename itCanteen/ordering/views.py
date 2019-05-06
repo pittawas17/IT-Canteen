@@ -42,7 +42,7 @@ def select_shop(request):
 
 
 @login_required()
-def selected(request, shop_id):
+def select_menu(request, shop_id):
     shop = Shop.objects.get(id=shop_id)
     menu_list = Menu.objects.filter(menu_of_id=shop_id).filter(is_daily_menu=True)
     context = {
@@ -97,15 +97,19 @@ def add_queue(shop):
     shop_queue = shop.shopqueue
     shop_queue.current_queue += 1
     shop_queue.queue = shop_queue.current_queue - shop_queue.last_queue
+    shop_queue.save()
 
 
 def remove_queue(shop, rem_queue):
     shop_queue = shop.shopqueue
+    OrderItem.objects.filter(queue=shop_queue, this_queue=rem_queue).delete()
+    for i in OrderItem.objects.filter(queue=shop_queue):
+        if i.this_queue > rem_queue:
+            i.this_queue -= 1
+            i.save()
     shop_queue.current_queue -= 1
-    for i in Order.objects.get(shop_queue=shop_queue):
-        if i > rem_queue:
-            Order.objects.get(this_queue=i).this_queue -= 1
     shop_queue.queue = shop_queue.current_queue - shop_queue.last_queue
+    shop_queue.save()
     update_wait(shop)
 
 
@@ -113,14 +117,17 @@ def queue_done(shop):
     shop_queue = shop.shopqueue
     shop_queue.last_queue += 1
     shop_queue.queue = shop_queue.current_queue - shop_queue.last_queue
+    shop_queue.save()
     update_wait(shop)
 
 
 def update_wait(shop):
     shop_queue = shop.shopqueue
-    order_in_shop = OrderItem.objects.get(queue=shop_queue)
+    order_in_shop = OrderItem.objects.filter(queue=shop_queue)
     for i in order_in_shop:
         i.wait = i.this_queue - shop_queue.last_queue
+        i.save()
+    shop_queue.save()
 
 
 @login_required()
@@ -134,6 +141,47 @@ def show_order_status(request):
         'order': order,
         'order_item': order_item,
     }
-    print(order)
-    print(order_item)
     return render(request, 'ordering/order_status.html', context=context)
+
+
+@login_required()
+def update_order(request, shop, menu_id, queue):
+    shop = Shop.objects.get(id=shop)
+    menu = Menu.objects.get(id=menu_id)
+    user = User.objects.get(id=request.user.id)
+    shop_queue = shop.shopqueue
+    if request.method == 'POST':
+        form = forms.EditOrderModelForm(request.POST)
+        if form.is_valid():
+            add_queue(shop)
+            if menu.special_price:
+                if request.POST.get('size') == "01":
+                    price = menu.normal_price
+                else:
+                    price = menu.special_price
+            else:
+                price = menu.normal_price
+            order_item = OrderItem.objects.get(this_queue=queue)
+            order_item.special_requirement = form.cleaned_data.get('special_requirement')
+            order_item.price = price
+            order_item.wait = order_item.this_queue - shop_queue.last_queue
+            order_item.save()
+            return redirect('order_status')
+    else:
+        form = EditOrderModelForm()
+    context = {
+        'shop': shop,
+        'menu': menu,
+        'forms': form
+    }
+    return render(request, 'ordering/edit_order.html', context=context)
+
+
+@login_required()
+def remove_order(request, shop, menu_id, queue):
+    shop = Shop.objects.get(id=shop)
+    menu = Menu.objects.get(id=menu_id)
+    user = User.objects.get(id=request.user.id)
+    shop_queue = shop.shopqueue
+    remove_queue(shop, queue)
+    return redirect('order_status')

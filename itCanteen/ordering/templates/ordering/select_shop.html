@@ -9,7 +9,7 @@
     <ul>
         {% for shop in shop_list %}
             <a href="{% url 'selected' shop_id=shop.id %}">
-                <li>{{ shop.shop_name }}</li>
+                <li>{{ shop.shop_name }} [ {{ shop.shopqueue.queue }} Queue(s) is waiting ]</li>
             </a>
         {% endfor %}
     </ul>

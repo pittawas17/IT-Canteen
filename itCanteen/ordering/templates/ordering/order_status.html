@@ -18,7 +18,8 @@
           <p>Queue: This order is ready. Please go to {{ item.menu.menu_of }}</p>
       {% endif %}
       <p>Price: {{ item.price }} Baht</p>
-      <p></p>
+      <div><a href="{% url 'update_order' shop=item.menu.menu_of.id menu_id=item.menu.id queue=item.this_queue%}">update</a></div>
+      <div><a href="{% url 'remove_order' shop=item.menu.menu_of.id menu_id=item.menu.id queue=item.this_queue%}">remove</a></div>
   </div>
   {% endfor %}
   <p>Total: {{ order.total_price }} Baht</p>
