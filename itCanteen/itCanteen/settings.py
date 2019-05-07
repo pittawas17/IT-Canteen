@@ -145,6 +145,8 @@ SITE_ID = 1
 
 LOGIN_REDIRECT_URL = 'register'
 
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
+
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
