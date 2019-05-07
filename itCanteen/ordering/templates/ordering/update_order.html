@@ -23,6 +23,13 @@
         <h4> Special Requirement: </h4>
         {{ forms.special_requirement}}
         <div><button type="submit">Confirm</button></div>
+    <div>
+    {% for item in ingredient %}
+        {%  if item.is_empty %}
+            <p style="color: red">{{ item.ingredient_name }}</p>
+        {% endif %}
+    {% endfor %}
+  </div>
     </form>
 {% endblock %}
 </body>

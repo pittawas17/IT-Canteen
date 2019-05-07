@@ -6,9 +6,10 @@ from django.shortcuts import render, redirect
 import datetime
 
 # Create your views here.
+from accounts.models import History, PersonalHistory
 from ordering import forms
 from ordering.forms import EditOrderModelForm
-from ordering.models import Shop, OrderItem, Order, Menu, ShopQueue
+from ordering.models import Shop, OrderItem, Order, Menu, ShopQueue, Ingredient
 
 
 @login_required()
@@ -45,15 +46,18 @@ def select_shop(request):
 def select_menu(request, shop_id):
     shop = Shop.objects.get(id=shop_id)
     menu_list = Menu.objects.filter(menu_of_id=shop_id).filter(is_daily_menu=True)
+    ingredient = Ingredient.objects.filter(ingredient_of=shop)
     context = {
         'shop': shop,
-        'menu_list': menu_list
+        'menu_list': menu_list,
+        'ingredient': ingredient
     }
     return render(request, template_name="ordering/select_menu.html", context=context)
 
 
 @login_required()
 def edit_order(request, menu_of, menu_id):
+    ingredient = Ingredient.objects.filter(ingredient_of=menu_of)
     shop = Shop.objects.get(id=menu_of)
     menu = Menu.objects.get(id=menu_id)
     user = User.objects.get(id=request.user.id)
@@ -88,7 +92,8 @@ def edit_order(request, menu_of, menu_id):
     context = {
         'shop': shop,
         'menu': menu,
-        'forms': form
+        'forms': form,
+        'ingredient': ingredient
     }
     return render(request, 'ordering/edit_order.html', context=context)
 
@@ -108,14 +113,6 @@ def remove_queue(shop, rem_queue):
             i.this_queue -= 1
             i.save()
     shop_queue.current_queue -= 1
-    shop_queue.queue = shop_queue.current_queue - shop_queue.last_queue
-    shop_queue.save()
-    update_wait(shop)
-
-
-def queue_done(shop):
-    shop_queue = shop.shopqueue
-    shop_queue.last_queue += 1
     shop_queue.queue = shop_queue.current_queue - shop_queue.last_queue
     shop_queue.save()
     update_wait(shop)
@@ -146,6 +143,7 @@ def show_order_status(request):
 
 @login_required()
 def update_order(request, shop, menu_id, queue):
+    ingredient = Ingredient.objects.filter(ingredient_of=shop)
     shop = Shop.objects.get(id=shop)
     menu = Menu.objects.get(id=menu_id)
     user = User.objects.get(id=request.user.id)
@@ -172,9 +170,21 @@ def update_order(request, shop, menu_id, queue):
     context = {
         'shop': shop,
         'menu': menu,
-        'forms': form
+        'forms': form,
+        'ingredient': ingredient
     }
     return render(request, 'ordering/edit_order.html', context=context)
+
+
+@login_required()
+def show_order_history(request):
+    user = User.objects.get(id=request.user.id)
+    detail = PersonalHistory.objects.filter(history=History.objects.get(user=user.userprofile))
+    context = {
+        'history': History.objects.get(user=user.userprofile),
+        'detail': detail
+    }
+    return render(request, 'ordering/show_order_history.html', context=context)
 
 
 @login_required()
@@ -185,3 +195,34 @@ def remove_order(request, shop, menu_id, queue):
     shop_queue = shop.shopqueue
     remove_queue(shop, queue)
     return redirect('order_status')
+
+
+@login_required()
+def shop_order(request):
+    shop = User.objects.get(id=request.user.id).userprofile.shop
+    shop_queue = shop.shopqueue
+    order_item = OrderItem.objects.filter(queue=shop_queue)
+    context = {
+        'shop': shop,
+        'shop_queue': shop_queue,
+        'order_item': order_item
+    }
+    return render(request, 'ordering/shop_order.html',  context=context)
+
+
+@login_required()
+def start_cook(request, shop, order_item_id, queue):
+    shop = Shop.objects.get(id=shop)
+    order_item = OrderItem.objects.get(id=order_item_id)
+    user = order_item.order.user
+    PersonalHistory.objects.create(
+        history=History.objects.get(user=order_item.order.user),
+        menu=order_item.menu,
+        shop=shop,
+        order_datetime=order_item.order_datetime,
+        price=order_item.price,
+    )
+    PersonalHistory.objects.all().last().save()
+    History.objects.get(user=order_item.order.user).total_price = (PersonalHistory.objects.filter(history=History.objects.get(user=order_item.order.user)).aggregate(Sum('price')))['price__sum']
+    remove_queue(shop, queue)
+    return redirect('shop_order')

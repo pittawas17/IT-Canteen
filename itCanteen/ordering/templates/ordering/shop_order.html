@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shop Order</title>
+</head>
+<body>
+    <h1>Order of: {{ shop.shop_name }}</h1>
+    {% for item in order_item %}
+        <div style="border: 1px solid black">
+            <p>Queue Number: {{ item.wait }}</p>
+            <P>Menu: {{ item.menu }}</P>
+            {% if item.price == item.menu.special_price%}
+                <p> Special Size: {{ menu.special_price }} Baht<br>
+            {% else %}
+                <p> Normal Size: {{ menu.normal_price }} Baht</p>
+            {% endif %}
+            <p>Order by: {{ item.order.user }}</p>
+            <p>Order time:{{ item.order_datetime }}</p>
+            <div><a href="{% url 'start_cook' shop=item.menu.menu_of.id order_item_id=item.id queue=item.this_queue%}">Start Cook</a></div>
+        </div>
+    {% endfor %}
+</body>
+</html>

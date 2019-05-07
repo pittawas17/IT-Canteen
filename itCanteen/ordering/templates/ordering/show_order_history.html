@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order History</title>
+</head>
+<body>
+    <h1>Your Order History</h1>
+    <h2>Total Money You Spent: {{ history.total_price }}</h2>
+    {% for item in detail %}
+        <div style="border: 1px solid black;">
+            <p>Order Date&Time: {{ item.order_datetime }}</p>
+            <p>Shop: {{ item.shop }}</p>
+            <p>Menu: {{ item.menu }}</p>
+            <p>Price: {{ item.price }} Baht</p>
+        </div>
+    {% endfor %}
+</body>
+</html>

@@ -32,6 +32,17 @@ class History(models.Model):
         return '%s\'s Order History' % self.user
 
 
+class PersonalHistory(models.Model):
+    history = models.ForeignKey(History, on_delete=models.PROTECT)
+    menu = models.TextField(null=False, default='some menu')
+    shop = models.TextField(null=False, default='some shop')
+    order_datetime = models.DateTimeField(null=True)
+    price = models.FloatField(null=False,default=0)
+
+    def __str__(self):
+        return '%s\' Order History (Detail)' % (self.history.user)
+
+
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
