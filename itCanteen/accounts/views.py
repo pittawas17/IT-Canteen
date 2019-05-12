@@ -121,7 +121,7 @@ def activate(request, uidb64, token):
         user.userprofile.is_validated = True
         user.save()
         user.userprofile.save()
-        return HttpResponse('Validated')
+        return redirect('home')
     else:
         return HttpResponse('Activation link is invalid!')
 

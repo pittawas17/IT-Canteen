@@ -82,7 +82,7 @@
     </div>
     <a href="{% url 'show_ingredient'%}">manage ingredient</a> <br>
     <a href="{% url 'show_menu'%}">manage menu</a><br>
-    <a href="{% url 'shop_order'%}">Order</a> <br>
+    <a href="{% url 'shop_order'%}">Order ({{ shop.shopqueue.queue }} queue(s) is waiting)</a> <br>
 
     <script language="JavaScript">
         function savestatus(n) {

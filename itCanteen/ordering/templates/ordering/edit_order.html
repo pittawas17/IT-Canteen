@@ -22,13 +22,13 @@
           background-color: #fff6ed;
       }
       body{
-          background-image: url("/static/images/shop_bg.png");
+          background-image: url("/static/images/normal2_bg.png");
           background-size: cover;
       }
       .top{
         z-index: 950;
           background: white;
-        {#box-shadow: 0 2px 4px -1px rgba(0,0,0,0.10);#}
+        box-shadow: 0 2px 4px -1px rgba(0,0,0,0.05);
         }
       .navbar-brand{
           margin-left: 3%;
@@ -203,8 +203,7 @@
         }
 
         .notify {
-          opacity: .9;
-          width: 150px;
+          opacity: .8;
           height:auto;
           border-radius: 5px;
           padding-left: 5px;
@@ -223,13 +222,12 @@
 
 
 <body>
-
     <nav class="navbar navbar-expand-lg navbar-light top">
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static "images/logo5.png" %}" width="auto" height="45" style="margin-top: 3%; margin-bottom: 3%" alt="">
         </a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav ml-auto" style="margin-right: 3%">
               <li class="nav-item active">
                 <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
               </li>
@@ -252,67 +250,70 @@
         </div>
     </nav>
 
+
     <div class="container content">
-    <div class="notify danger">
+
+    <div class="notify danger" style="position: -webkit-sticky;position: sticky;top: 0;z-index: 3;padding-top: 10px; padding-bottom: 10px">
         {% fontawesome_icon 'frown' color='white'%}
-      <div class="text">
-        {% for item in ingredient %}
-            {%  if item.is_empty %}
-                <p style="color: white; font-family: 'Kanit Light', sans-serif">! (หมด) {{ item.ingredient_name }}</p>
-            {% endif %}
-        {% endfor %}
-      </div>
+        <div class="text text-center" style="width: 100%">
+            <p> คำเตือน!! วัตถุดิบต่อไปนี้ไม่พร้อมสำหรับการปรุงอาหารในขณะนี้: </p>
+            {% for item in ingredient %}
+                {%  if item.is_empty %}
+                    <span style="color: white; font-family: 'Kanit Light', sans-serif; margin-right: 40px;">{{ item.ingredient_name }}</span>
+                {% endif %}
+            {% endfor %}
+        </div>
     </div>
     <br>
 
-{#   <div class="card" style="width: 80%; height: 400px; margin: auto; padding-bottom: 600px">#}
-{#      <div class="card-body">#}
-{#        <div class="split left">#}
-{#        {% if menu.menu_image %}#}
-{#             <img src="{{ menu.menu_image.url }}" width="500" height="500">#}
-{#        {% endif %}#}
-{#        </div>#}
-{#        <div class="split right">#}
-{#            {% block content %}#}
-{#            <form method="POST" style="font-family: 'Kanit', sans-serif;">#}
-{#            {% csrf_token %}#}
-{#                <p style="font-family: 'Kanit', sans-serif;">{{ menu.menu_name }}<br>#}
-{#                คำอธิบาย : {{ menu.description }}</p>#}
-{#                {% if menu.special_price %}#}
-{#                    <input type="radio" name="size" value="01" required> ปกติ: {{ menu.normal_price }} บาท<br>#}
-{#                    <input type="radio" name="size" value="02"> พิเศษ: {{ menu.special_price }} บาท<br>#}
-{#                {% else %}#}
-{#                    <p> ปกติ: {{ menu.normal_price }} บาท</p>#}
-{#                {% endif %}#}
-{#                {{ forms.special_requirement|as_crispy_field}}#}
-{#                <button class ="btn btn-danger" type="submit" style="width:150px">สั่งซื้อ</button>#}
-{#            </form>#}
-{#            {% endblock %}#}
-{#        </div>#}
-{#      </div>#}
-{#    </div>#}
-
-    {% block content %}
-    <form method="POST">
-    {% csrf_token %}
+   <div class="card" style="width: 80%; height: 400px; margin: auto; padding-bottom: 600px">
+      <div class="card-body">
+        <div class="split left">
         {% if menu.menu_image %}
-             <img src="{{ menu.menu_image.url }}">
+             <img src="{{ menu.menu_image.url }}" width="500" height="500">
         {% endif %}
-        <h2>Menu from: {{ shop.shop_name }}</h2>
-        <h3>Menu: {{ menu.menu_name }}</h3>
-        <h4>Description: {{ menu.description }}</h4>
-        <h4> Price: </h4>
-        {% if menu.special_price %}
-            <input type="radio" name="size" value="01" required> Normal Size: {{ menu.normal_price }} Baht<br>
-            <input type="radio" name="size" value="02"> Special Size: {{ menu.special_price }} Baht<br>
-        {% else %}
-            <p> Normal Size: {{ menu.normal_price }} Baht</p>
-        {% endif %}
-        <h4> Special Requirement: </h4>
-        {{ forms.special_requirement}}
-        <div><button type="submit">Confirm</button></div>
-    </form>
-{% endblock %}
+        </div>
+        <div class="split right">
+            {% block content %}
+            <form method="POST" style="font-family: 'Kanit', sans-serif;">
+            {% csrf_token %}
+                <p style="font-family: 'Kanit', sans-serif;">{{ menu.menu_name }}<br>
+                คำอธิบาย : {{ menu.description }}</p>
+                {% if menu.special_price %}
+                    <input type="radio" name="size" value="01" required> ปกติ: {{ menu.normal_price }} บาท<br>
+                    <input type="radio" name="size" value="02"> พิเศษ: {{ menu.special_price }} บาท<br>
+                {% else %}
+                    <p> ปกติ: {{ menu.normal_price }} บาท</p>
+                {% endif %}
+                {{ forms.special_requirement|as_crispy_field}}
+                <button class ="btn btn-danger" type="submit" style="width:150px">สั่งซื้อ</button>
+            </form>
+            {% endblock %}
+        </div>
+      </div>
+    </div>
+
+{#    {% block content %}#}
+{#    <form method="POST">#}
+{#    {% csrf_token %}#}
+{#        {% if menu.menu_image %}#}
+{#             <img src="{{ menu.menu_image.url }}">#}
+{#        {% endif %}#}
+{#        <h2>Menu from: {{ shop.shop_name }}</h2>#}
+{#        <h3>Menu: {{ menu.menu_name }}</h3>#}
+{#        <h4>Description: {{ menu.description }}</h4>#}
+{#        <h4> Price: </h4>#}
+{#        {% if menu.special_price %}#}
+{#            <input type="radio" name="size" value="01" required> Normal Size: {{ menu.normal_price }} Baht<br>#}
+{#            <input type="radio" name="size" value="02"> Special Size: {{ menu.special_price }} Baht<br>#}
+{#        {% else %}#}
+{#            <p> Normal Size: {{ menu.normal_price }} Baht</p>#}
+{#        {% endif %}#}
+{#        <h4> Special Requirement: </h4>#}
+{#        {{ forms.special_requirement}}#}
+{#        <div><button class="btn btn-danger" type="submit">Confirm</button></div>#}
+{#    </form>#}
+{#{% endblock %}#}
 
     </div>
 
@@ -323,8 +324,8 @@
                 <div class="single_footer">
                   <h4>Services</h4>
                   <ul>
-                    <li><a href="#">Standard dummy text</a></li>
-                    <li><a href="#">Type specimen book</a></li>
+                    <li><a href="#">เกี่ยวกับ IT Canteen</a></li>
+                    <li><a href="#">นโยบายความเป็นส่วนตัว</a></li>
                   </ul>
                 </div>
               </div>
@@ -333,8 +334,8 @@
                 <div class="single_footer single_footer_address">
                   <h4>Page Link</h4>
                   <ul>
-                    <li><a href="#">Lorem Ipsum</a></li>
-                    <li><a href="#">Simply dummy text</a></li>
+                    <li><a href="#">เกี่ยวกับเรา</a></li>
+                    <li><a href="#">คำถามที่พบบ่อย</a></li>
                   </ul>
                 </div>
               </div>

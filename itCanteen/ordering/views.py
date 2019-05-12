@@ -82,6 +82,19 @@ def edit_order(request, menu_of, menu_id):
             order_item = OrderItem.objects.get(menu=menu, queue=shop_queue, order=user.userprofile.order, order_datetime=order_datetime)
             order_item.wait = order_item.this_queue - shop_queue.last_queue
             order_item.save()
+            mail_subject = 'New order'
+            message = render_to_string('ordering/shop_notify_email.html', {
+                'user': user,
+                'shop': shop,
+                'menu': order_item.menu,
+                'price': order_item.price,
+                'orderDT': order_item.order_datetime
+            })
+            to_email = shop.shop_host.email
+            email = EmailMessage(
+                mail_subject, message, to=[to_email]
+            )
+            email.send()
             return redirect('order_status')
     else:
         form = EditOrderModelForm()
@@ -326,7 +339,7 @@ def update_ingredient(request, ingre_id):
             value.ingredient_of = shop
             value.save()
             form.save()
-            return HttpResponse('Done')
+            return redirect('show_ingredient')
     else:
         form = IngredientModelForm(instance=ingredient)
     context = {
@@ -347,7 +360,7 @@ def update_menu(request, menu_id):
             value.menu_of = shop
             value.save()
             form.save()
-            return redirect('home')
+            return redirect('show_menu')
     else:
         form = MenuModelForm(instance=menu)
     context = {
@@ -355,3 +368,15 @@ def update_menu(request, menu_id):
         'menu': menu
     }
     return render(request, 'ordering/update_menu.html', context=context)
+
+
+@login_required()
+def remove_ingredient(request, ingre_id):
+    Ingredient.objects.get(id=ingre_id).delete()
+    return redirect('show_ingredient')
+
+
+@login_required()
+def remove_menu(request, menu_id):
+    Menu.objects.get(id=menu_id).delete()
+    return redirect('show_menu')
