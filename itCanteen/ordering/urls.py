@@ -6,7 +6,7 @@ urlpatterns = [
     path('home/', views.home, name='home'),
 
     # url for customer
-    path('shop/', views.select_shop, name='select_shop'),
+    path('shop/', views.select_shop, name='show_shop'),
     path('shop/shop_<int:shop_id>/', views.select_menu, name='selected'),
     path('shop/shop_<int:menu_of>/menu_<int:menu_id>/', views.edit_order, name='edit_order'),
     path('update/shop=<int:shop>menu=<int:menu_id>queue=<int:queue>/', views.update_order, name='update_order'),
@@ -17,4 +17,11 @@ urlpatterns = [
     # url for shop
     path('shop_order/', views.shop_order, name='shop_order'),
     path('shop_cook/shop=<int:shop>order_item=<int:order_item_id>queue=<int:queue>/', views.start_cook, name='start_cook'),
+    path('show_ingredient/', views.show_ingredient, name="show_ingredient"),
+    path('create_ingredient/', views.create_ingredient, name="create_ingredient"),
+    path('update_ingredient/<int:ingre_id>', views.update_ingredient, name="update_ingredient"),
+    path('shop_menu/', views.show_menu, name="show_menu"),
+    path('create_menu/', views.create_menu, name="create_menu"),
+    path('update_menu/<int:menu_id>', views.update_menu, name="update_menu"),
+    path('edit_status/status<int:status>', views.edit_status, name="edit_status")
 ]

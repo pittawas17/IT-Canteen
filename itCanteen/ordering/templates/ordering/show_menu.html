@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Menu</title>
+</head>
+<body>
+    <h1>Menu</h1>
+    <div><a href="{% url 'create_menu' %}">Add Menu</a></div>
+    {% for item in menu %}
+        <div style="border: 1px solid black;">
+            {% if item.menu_image %}
+                <img src="{{ item.menu_image.url }}">
+            {% endif %}
+            <p>Menu Name: {{ item.menu_name }}</p>
+            <p>DescriptionL {{ item.description }}</p>
+            <p>Type: {% if item.type == '01' %}Food{% else %}Drink{% endif %}</p>
+            <p>Status: {% if item.is_daily_menu %}Available{% else %}Out of order{% endif %}</p>
+            {% if item.special_price %}
+                ปกติ : {{ item.normal_price }} บาท<br>
+                พิเศษ : {{ item.special_price }} บาท<br>
+            {% else %}
+                ปกติ : {{ item.normal_price }} บาท
+            {% endif %}
+            <div><a href="{% url 'update_menu' menu_id=item.id %}">update</a></div>
+        </div>
+    {% endfor %}
+</body>
+</html>

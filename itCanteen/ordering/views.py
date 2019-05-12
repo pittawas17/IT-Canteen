@@ -1,3 +1,6 @@
+
+from django.core.mail import EmailMessage
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Sum
@@ -6,34 +9,28 @@ from django.shortcuts import render, redirect
 import datetime
 
 # Create your views here.
+from django.template.loader import render_to_string
+
 from accounts.models import History, PersonalHistory
 from ordering import forms
-from ordering.forms import EditOrderModelForm
+from ordering.forms import EditOrderModelForm, IngredientModelForm, MenuModelForm
 from ordering.models import Shop, OrderItem, Order, Menu, ShopQueue, Ingredient
 
 
-@login_required()
 def home(request):
-    user_type = User.objects.get(id=request.user.id).userprofile.type
-    if user_type == "01":
-        return customer_main(request)
+    if request.user.is_authenticated:
+        user_type = User.objects.get(id=request.user.id).userprofile.type
+        if user_type == "01":
+            return redirect('show_shop')
+        else:
+            context = {
+                'shop': User.objects.get(id=request.user.id).userprofile.shop
+            }
+            return render(request, 'ordering/shop_home.html', context=context)
     else:
-        return shop_main(request)
+        return redirect('show_shop')
 
 
-@login_required()
-def shop_main(request):
-    a = User.objects.get(id=request.user.id).userprofile.shop.shop_name
-    return HttpResponse(a)
-
-
-@login_required()
-def customer_main(request):
-    a = User.objects.get(id=request.user.id).userprofile.real_first_name
-    return HttpResponse(a)
-
-
-@login_required()
 def select_shop(request):
     shop_list = Shop.objects.all()
     context = {
@@ -42,7 +39,6 @@ def select_shop(request):
     return render(request, template_name='ordering/select_shop.html', context=context)
 
 
-@login_required()
 def select_menu(request, shop_id):
     shop = Shop.objects.get(id=shop_id)
     menu_list = Menu.objects.filter(menu_of_id=shop_id).filter(is_daily_menu=True)
@@ -132,7 +128,10 @@ def show_order_status(request):
     user = User.objects.get(id=request.user.id).userprofile
     order = user.order
     order_item = OrderItem.objects.filter(order=order)
-    order.total_price = (order_item.aggregate(Sum('price')))['price__sum']
+    if (order_item.aggregate(Sum('price')))['price__sum']:
+        order.total_price = (order_item.aggregate(Sum('price')))['price__sum']
+    else:
+        order.total_price = 0
     order.save()
     context = {
         'order': order,
@@ -215,14 +214,144 @@ def start_cook(request, shop, order_item_id, queue):
     shop = Shop.objects.get(id=shop)
     order_item = OrderItem.objects.get(id=order_item_id)
     user = order_item.order.user
+    history = History.objects.get(user=user)
     PersonalHistory.objects.create(
-        history=History.objects.get(user=order_item.order.user),
+        history=History.objects.get(user=user),
         menu=order_item.menu,
         shop=shop,
         order_datetime=order_item.order_datetime,
         price=order_item.price,
     )
     PersonalHistory.objects.all().last().save()
-    History.objects.get(user=order_item.order.user).total_price = (PersonalHistory.objects.filter(history=History.objects.get(user=order_item.order.user)).aggregate(Sum('price')))['price__sum']
+    history.total_price = (PersonalHistory.objects.filter(history=history).aggregate(Sum('price')))['price__sum']
+    history.save()
+    mail_subject = 'Get your food.'
+    message = render_to_string('ordering/food_notify_email.html', {
+        'user': user,
+        'shop': shop,
+        'menu': order_item.menu,
+        'price': order_item.price,
+        'orderDT': order_item.order_datetime
+    })
+    to_email = user.email
+    email = EmailMessage(
+        mail_subject, message, to=[to_email]
+    )
+    email.send()
     remove_queue(shop, queue)
     return redirect('shop_order')
+
+
+@login_required()
+def create_ingredient(request):
+    shop = User.objects.get(id=request.user.id).userprofile.shop
+    if request.method == 'POST':
+        form = IngredientModelForm(request.POST)
+        if form.is_valid():
+            Ingredient.objects.create(
+                ingredient_of=shop,
+                is_empty=form.cleaned_data.get('is_empty'),
+                ingredient_name=form.cleaned_data.get('ingredient_name')
+            )
+            Ingredient.objects.all().last().save()
+            return HttpResponse('Done')
+    else:
+        form = IngredientModelForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'ordering/create_ingredient.html', context=context)
+
+
+@login_required()
+def create_menu(request):
+    shop = User.objects.get(id=request.user.id).userprofile.shop
+    if request.method == 'POST':
+        form = MenuModelForm(request.POST, request.FILES)
+        if form.is_valid():
+            value = form.save(commit=False)
+            value.menu_of = shop
+            value.save()
+            form.save()
+            return redirect('home')
+    else:
+        form = MenuModelForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'ordering/create_menu.html', context=context)
+
+
+@login_required()
+def edit_status(request, status):
+    shop = User.objects.get(id=request.user.id).userprofile.shop
+    if status == 1:
+        shop.status = '01'
+    elif status == 2:
+        shop.status = '02'
+    else:
+        shop.status = '03'
+    shop.save()
+    return redirect('home')
+
+
+@login_required()
+def show_ingredient(request):
+    shop = User.objects.get(id=request.user.id).userprofile.shop
+    ingredient = Ingredient.objects.filter(ingredient_of=shop)
+    context = {
+        'ingredient': ingredient
+    }
+    return render(request, 'ordering/show_ingredient.html', context)
+
+
+@login_required()
+def show_menu(request):
+    shop = User.objects.get(id=request.user.id).userprofile.shop
+    menu = Menu.objects.filter(menu_of=shop)
+    context = {
+        'menu': menu
+    }
+    return render(request, 'ordering/show_menu.html', context)
+
+
+@login_required()
+def update_ingredient(request, ingre_id):
+    shop = User.objects.get(id=request.user.id).userprofile.shop
+    ingredient = Ingredient.objects.get(pk=ingre_id)
+    if request.method == 'POST':
+        form = IngredientModelForm(request.POST, instance=ingredient)
+        if form.is_valid():
+            value = form.save(commit=False)
+            value.ingredient_of = shop
+            value.save()
+            form.save()
+            return HttpResponse('Done')
+    else:
+        form = IngredientModelForm(instance=ingredient)
+    context = {
+        'form': form,
+        'ingredient': ingredient
+    }
+    return render(request, 'ordering/update_ingredient.html', context=context)
+
+
+@login_required()
+def update_menu(request, menu_id):
+    shop = User.objects.get(id=request.user.id).userprofile.shop
+    menu = Menu.objects.get(pk=menu_id)
+    if request.method == 'POST':
+        form = MenuModelForm(request.POST, request.FILES, instance=menu)
+        if form.is_valid():
+            value = form.save(commit=False)
+            value.menu_of = shop
+            value.save()
+            form.save()
+            return redirect('home')
+    else:
+        form = MenuModelForm(instance=menu)
+    context = {
+        'form': form,
+        'menu': menu
+    }
+    return render(request, 'ordering/update_menu.html', context=context)

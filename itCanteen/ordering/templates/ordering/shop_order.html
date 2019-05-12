@@ -11,9 +11,9 @@
             <p>Queue Number: {{ item.wait }}</p>
             <P>Menu: {{ item.menu }}</P>
             {% if item.price == item.menu.special_price%}
-                <p> Special Size: {{ menu.special_price }} Baht<br>
+                <p> Special Size: {{ item.menu.special_price }} Baht<br>
             {% else %}
-                <p> Normal Size: {{ menu.normal_price }} Baht</p>
+                <p> Normal Size: {{ item.menu.normal_price }} Baht</p>
             {% endif %}
             <p>Order by: {{ item.order.user }}</p>
             <p>Order time:{{ item.order_datetime }}</p>

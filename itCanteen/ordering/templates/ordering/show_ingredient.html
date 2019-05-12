@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ingredients</title>
+</head>
+<body>
+    <h1>Ingredient</h1>
+    <div><a href="{% url 'create_ingredient' %}">Add new Ingredient</a></div>
+    {% for item in ingredient %}
+        <div style="border: 1px solid black;">
+            <p>Ingredient Name: {{ item.ingredient_name }}</p>
+            <p>Status: {% if item.is_empty %}Out of order{% else %}Available{% endif %}</p>
+            <div><a href="{% url 'update_ingredient' ingre_id=item.id %}">update</a></div>
+        </div>
+    {% endfor %}
+</body>
+</html>

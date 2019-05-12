@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+{% load crispy_forms_tags %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Ingredient</title>
+</head>
+<body>
+    <h1>Add Ingredient</h1>
+    {% block content %}
+    <form method="post" action="{% url 'update_ingredient' ingredient.id %}">
+        {% csrf_token %}
+        <div> {{ form.ingredient_name|as_crispy_field }}</div>
+        <div> {{ form.is_empty|as_crispy_field }}</div>
+        <button type="submit" class="btn btn-danger" onclick="alert('Done')">Update</button>
+    </form>
+    {% endblock %}
+</body>
+</html>
