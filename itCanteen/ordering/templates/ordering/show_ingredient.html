@@ -207,9 +207,6 @@
               </li>
               {% if request.user.is_authenticated %}
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'shop_order' %}">Order Status</a>
-                  </li>
-                  <li class="nav-item">
                     <a class="nav-link" href="{% url 'show_ingredient' %}">Manage Ingredient</a>
                   </li>
                   <li class="nav-item">
@@ -228,24 +225,33 @@
     </nav>
 
     <div class="container" style="min-height: 38vh;">
-      <div style="background: white; border-radius: 25px; padding: 20px;margin: 80px">
-          <h1>Ingredient</h1>
-    <a href="{% url 'create_ingredient' %}">
-        <button type="button" class="btn btn-secondary" style="color: whitesmoke; font-family: 'Kanit', sans-serif;width: 100%">
-            <span style="font-size: 1.2rem">+</span> Add New Menu
-        </button>
-    </a>
-    {% for item in ingredient %}
-        <div>
-            <hr>
-            <p>Ingredient Name: {{ item.ingredient_name }}</p>
-            <p>Status: {% if item.is_empty %}Out of order{% else %}Available{% endif %}</p>
-            <div><a href="{% url 'update_ingredient' ingre_id=item.id %}"><button type="button" class="btn btn-warning centered" style="color: black; font-family: 'Kanit', sans-serif;">update</button></a>
-            <a href="{% url 'remove_ingredient' ingre_id=item.id %}"><button type="button" class="btn btn-danger centered" style="color: white; font-family: 'Kanit', sans-serif;">remove</button></a></div>
+        <div style="background: white; border-radius: 25px; padding: 20px;margin: 80px">
+            <h1>Ingredient</h1>
+            <a href="{% url 'create_ingredient' %}">
+                <button type="button" class="btn btn-secondary" style="color: whitesmoke; font-family: 'Kanit', sans-serif;width: 100%">
+                    <span style="font-size: 1.2rem">+</span> Add New Menu
+                </button>
+            </a>
+            {% for item in ingredient %}
+            <div>
+                <hr>
+                <p>Ingredient Name: {{ item.ingredient_name }}</p>
+                <p>Status: {% if item.is_empty %}Out of order{% else %}Available{% endif %}</p>
+                <div>
+                    <a href="{% url 'update_ingredient' ingre_id=item.id %}">
+                        <button type="button" class="btn btn-warning centered" style="color: black; font-family: 'Kanit', sans-serif;">
+                            update
+                        </button>
+                    </a>
+                    <a href="{% url 'remove_ingredient' ingre_id=item.id %}">
+                        <button type="button" class="btn btn-danger centered" style="color: white; font-family: 'Kanit', sans-serif;">
+                            remove
+                        </button>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-    {% endfor %}
-      </div>
-
     </div>
 
     <footer class="footer">

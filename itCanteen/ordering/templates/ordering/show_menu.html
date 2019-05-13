@@ -222,6 +222,7 @@
      </style>
 </head>
 <div>
+
     <nav class="navbar navbar-expand-lg navbar-light top">
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static "images/logo5.png" %}" width="auto" height="45" style="margin-top: 3%; margin-bottom: 3%" alt="">
@@ -232,9 +233,6 @@
                 <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
               </li>
               {% if request.user.is_authenticated %}
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'shop_order' %}">Order Status</a>
-                  </li>
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'show_ingredient' %}">Manage Ingredient</a>
                   </li>

@@ -57,9 +57,9 @@ class Shop(models.Model):
 
 
 class Menu(models.Model):
-    menu_name = models.TextField(max_length=100, null=False)
+    menu_name = models.CharField(max_length=100, null=False)
     is_daily_menu = models.BooleanField(null=False, default=False)
-    description = models.TextField(max_length=200, null=True)
+    description = models.TextField(max_length=200, null=True, blank=True)
     normal_price = models.FloatField(null=False)
     special_price = models.FloatField(null=True, blank=True)
     FOOD = "01"
@@ -78,7 +78,7 @@ class Menu(models.Model):
 
 
 class Ingredient(models.Model):
-    ingredient_name = models.TextField(max_length=50, null=False, default="some ingredient")
+    ingredient_name = models.CharField(max_length=50, null=False, default="some ingredient")
     is_empty = models.BooleanField(default=False)
     ingredient_of = models.ForeignKey(Shop, on_delete=models.PROTECT, default='99999')
 

@@ -15,7 +15,6 @@ urlpatterns = [
     path('order_history/', views.show_order_history, name='order_history'),
 
     # url for shop
-    path('shop_order/', views.shop_order, name='shop_order'),
     path('shop_cook/shop=<int:shop>order_item=<int:order_item_id>queue=<int:queue>/', views.start_cook, name='start_cook'),
     path('show_ingredient/', views.show_ingredient, name="show_ingredient"),
     path('create_ingredient/', views.create_ingredient, name="create_ingredient"),

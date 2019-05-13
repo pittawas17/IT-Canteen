@@ -23,10 +23,7 @@ def home(request):
         if user_type == "01":
             return redirect('show_shop')
         else:
-            context = {
-                'shop': User.objects.get(id=request.user.id).userprofile.shop
-            }
-            return render(request, 'ordering/shop_home.html', context=context)
+            return shop_order(request )
     else:
         return redirect('show_shop')
 
@@ -252,7 +249,7 @@ def start_cook(request, shop, order_item_id, queue):
     )
     email.send()
     remove_queue(shop, queue)
-    return redirect('shop_order')
+    return redirect('home')
 
 
 @login_required()
@@ -267,7 +264,7 @@ def create_ingredient(request):
                 ingredient_name=form.cleaned_data.get('ingredient_name')
             )
             Ingredient.objects.all().last().save()
-            return HttpResponse('Done')
+            return redirect('show_ingredient')
     else:
         form = IngredientModelForm()
     context = {
@@ -286,7 +283,7 @@ def create_menu(request):
             value.menu_of = shop
             value.save()
             form.save()
-            return redirect('home')
+            return redirect('show_menu')
     else:
         form = MenuModelForm()
     context = {

@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Order History</title>
+    <title>Manage Ingredient</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <style>
         /*{#FONT#}*/
@@ -26,7 +26,7 @@
       .top{
         z-index: 950;
           background: white;
-          box-shadow: 0 2px 4px -1px rgba(0,0,0,0.05);
+        {#box-shadow: 0 2px 4px -1px rgba(0,0,0,0.10);#}
         }
       .navbar-brand{
           margin-left: 3%;
@@ -58,7 +58,7 @@
         }
 
         .footer {
-          position: absolute;
+          position: relative;
           width: 100%;
           background: linear-gradient(105deg, #e23d00, #ee8d3d);
           margin-top: 5%;
@@ -192,7 +192,6 @@
         .copyright a:hover {
           color: #ffefe1;
         }
-
         table {
           border-collapse: collapse;
           background: white;
@@ -311,64 +310,58 @@
     </nav>
 
     <div class="container" style="min-height: 38vh;">
-        <div class="content" style="margin-top: 8%; margin-bottom: 3%"><h1>Your Order History</h1>
-        <h3>Total Money You Spent: {{ history.total_price }}</h3></div>
-{#    {% for item in detail %}#}
-{#        <div style="border: 1px solid black;">#}
-{#            <p>Order Date&Time: {{ item.order_datetime }}</p>#}
-{#            <p>Shop: {{ item.shop }}</p>#}
-{#            <p>Menu: {{ item.menu }}</p>#}
-{#            <p>Price: {{ item.price }} Baht</p>#}
-{#        </div>#}
-{#    {% endfor %}#}
-    <table>
-          <thead>
-            <tr>
-              <th>Date & Time</th>
-              <th>Shop</th>
-              <th>Menu</th>
-              <th>Price (บาท)</th>
-            </tr>
-          <thead>
-
-          <tbody>
-            {% for item in detail %}
+        <div style="background: white; border-radius: 25px; padding: 20px;margin: 80px">
+            <h1>Your Order History</h1>
+            <h3>Total Money You Spent: {{ history.total_price }}</h3>
+            <table>
+              <thead>
                 <tr>
-                    <td>{{ item.order_datetime }}</td>
-                    <td>{{ item.shop }}</td>
-                    <td>{{ item.menu }}</td>
-                    <td>{{ item.price }}</td>
+                  <th>Date & Time</th>
+                  <th>Shop</th>
+                  <th>Menu</th>
+                  <th>Price (บาท)</th>
                 </tr>
-            {% endfor %}
-{#            <tr>#}
-{#              <td>CES-9000</td>#}
-{#              <td>50mt</td>#}
-{#              <td>9mm</td>#}
-{#              <td>1/2"</td>#}
-{#            </tr>#}
-{#            <tr>#}
-{#              <td>CES-9000</td>#}
-{#              <td>50mt</td>#}
-{#              <td>9mm</td>#}
-{#              <td>1/2"</td>#}
-{#            </tr>#}
-{#            <tr>#}
-{#              <td>CES-9000</td>#}
-{#              <td>50mt</td>#}
-{#              <td>9mm</td>#}
-{#              <td>1/2"</td>#}
-{#            </tr>#}
-{#             <tr>#}
-{#              <td>CES-9000</td>#}
-{#              <td>50mt</td>#}
-{#              <td>9mm</td>#}
-{#              <td>1/2"</td>#}
-{#            </tr>#}
-          </tbody>
-    </table>
+              <thead>
+
+              <tbody>
+                {% for item in detail %}
+                    <tr>
+                        <td>{{ item.order_datetime }}</td>
+                        <td>{{ item.shop }}</td>
+                        <td>{{ item.menu }}</td>
+                        <td>{{ item.price }}</td>
+                    </tr>
+                {% endfor %}
+    {#            <tr>#}
+    {#              <td>CES-9000</td>#}
+    {#              <td>50mt</td>#}
+    {#              <td>9mm</td>#}
+    {#              <td>1/2"</td>#}
+    {#            </tr>#}
+    {#            <tr>#}
+    {#              <td>CES-9000</td>#}
+    {#              <td>50mt</td>#}
+    {#              <td>9mm</td>#}
+    {#              <td>1/2"</td>#}
+    {#            </tr>#}
+    {#            <tr>#}
+    {#              <td>CES-9000</td>#}
+    {#              <td>50mt</td>#}
+    {#              <td>9mm</td>#}
+    {#              <td>1/2"</td>#}
+    {#            </tr>#}
+    {#             <tr>#}
+    {#              <td>CES-9000</td>#}
+    {#              <td>50mt</td>#}
+    {#              <td>9mm</td>#}
+    {#              <td>1/2"</td>#}
+    {#            </tr>#}
+              </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="footer">
+    <footer class="footer">
           <div class="container">
             <div class="row">
               <div class="col-lg-4 col-sm-4 col-xs-12">
@@ -416,8 +409,6 @@
             <!--- END ROW -->
           </div>
           <!--- END CONTAINER -->
-    </div>
-
-
+    </footer>
 </body>
 </html>

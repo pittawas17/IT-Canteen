@@ -236,16 +236,16 @@
           {% else %}
               <p>Queue: This order is ready. Please go to {{ item.menu.menu_of }}</p>
           {% endif %}
-          <p>Order Date&Time: {{ item.order_datetime }}</p><hr>
-          <p>Total: {{ order.total_price }} บาท</p>
+          <p>Order Date&Time: {{ item.order_datetime }}</p>
               <hr>
               <div class="row" style="margin: 0 auto;">
                 <a href="{% url 'update_order' shop=item.menu.menu_of.id menu_id=item.menu.id queue=item.this_queue%}" style="margin-right: 3%;"><button type="button" class="btn btn-warning centered" style="color: black; font-family: 'Kanit', sans-serif;">update</button></a>
                 <a href="{% url 'remove_order' shop=item.menu.menu_of.id menu_id=item.menu.id queue=item.this_queue%}"><button type="button" class="btn btn-danger centered" style="color: black; font-family: 'Kanit', sans-serif">remove</button></a>
               </div>
           {% endfor %}
+        <hr>
+        <h3>Total: {{ order.total_price }} บาท</h3>
       </div>
-
     </div>
 
     <footer class="footer">

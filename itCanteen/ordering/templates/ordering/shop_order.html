@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 {% load static %}
 {% load crispy_forms_tags %}
@@ -5,7 +6,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Shop Order</title>
+    <title>Order: Status</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <style>
         /*{#FONT#}*/
@@ -22,12 +23,11 @@
       body{
           background-image: url("/static/images/shop_bg.png");
           background-size: cover;
-          height: 100%;
       }
       .top{
         z-index: 950;
           background: white;
-        box-shadow: 0 2px 4px -1px rgba(0,0,0,0.05);
+        {#box-shadow: 0 2px 4px -1px rgba(0,0,0,0.10);#}
         }
       .navbar-brand{
           margin-left: 3%;
@@ -58,13 +58,8 @@
           /* min-height: 100vh;*/
         }
 
-        #page-container {
-          position: relative;
-          min-height: 100vh;
-        }
-
         .footer {
-          position: absolute;
+          position: relative;
           width: 100%;
           background: linear-gradient(105deg, #e23d00, #ee8d3d);
           margin-top: 5%;
@@ -126,6 +121,17 @@
           margin: 0;
           padding: 0;
         }
+
+        /*START NEWSLETTER CSS*/
+        .subscribe {
+          display: block;
+          position: relative;
+          margin-top: 15px;
+          width: 100%;
+        }
+
+        /*END NEWSLETTER CSS*/
+
         /*START SOCIAL PROFILE CSS*/
         .social_profile {
           margin-top: 30px;
@@ -187,10 +193,64 @@
         .copyright a:hover {
           color: #ffefe1;
         }
-
+        .tgl {
+          display: none;
+        }
+        .tgl, .tgl:after, .tgl:before, .tgl *, .tgl *:after, .tgl *:before, .tgl + .tgl-btn {
+          box-sizing: border-box;
+        }
+        .tgl::selection, .tgl:after::selection, .tgl:before::selection, .tgl *::selection, .tgl *:after::selection, .tgl *:before::selection, .tgl + .tgl-btn::selection {
+          background: none;
+        }
+        .tgl + .tgl-btn {
+          outline: 0;
+          display: block;
+          width: 4em;
+          height: 2em;
+          position: relative;
+          cursor: pointer;
+          user-select: none;
+        }
+        .tgl + .tgl-btn:after, .tgl + .tgl-btn:before {
+          position: relative;
+          display: block;
+          content: "";
+          width: 50%;
+          height: 100%;
+        }
+        .tgl + .tgl-btn:after {
+          left: 0;
+        }
+        .tgl + .tgl-btn:before {
+          display: none;
+        }
+        .tgl:checked + .tgl-btn:after {
+          left: 50%;
+        }
+        .tgl-light + .tgl-btn {
+          background: #f0f0f0;
+          border-radius: 2em;
+          padding: 2px;
+          transition: all 0.4s ease;
+        }
+        .tgl-light + .tgl-btn:after {
+          border-radius: 50%;
+          background: #fff;
+          transition: all 0.2s ease;
+        }
+        .tgl-light:checked + .tgl-btn1 {
+          background: #9fd6ae;
+        }
+        .tgl-light:checked + .tgl-btn2 {
+          background: #ffc036;
+        }
+        .tgl-light:checked + .tgl-btn3 {
+          background: #da1f26;
+        }
      </style>
 </head>
 <body>
+
     <nav class="navbar navbar-expand-lg navbar-light top">
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static "images/logo5.png" %}" width="auto" height="45" style="margin-top: 3%; margin-bottom: 3%" alt="">
@@ -202,10 +262,10 @@
               </li>
               {% if request.user.is_authenticated %}
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'order_status' %}">Edit / Check your order</a>
+                    <a class="nav-link" href="{% url 'show_ingredient' %}">Manage Ingredient</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'order_history' %}">Order history</a>
+                    <a class="nav-link" href="{% url 'show_menu' %}">Manage Menu</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
@@ -219,37 +279,48 @@
         </div>
     </nav>
 
-{#    <h1>Order of: {{ shop.shop_name }}</h1>#}
-{#    {% for item in order_item %}#}
-{#        <div style="border: 1px solid black">#}
-{#            <p>Queue Number: {{ item.wait }}</p>#}
-{#            <P>Menu: {{ item.menu }}</P>#}
-{#            {% if item.price == item.menu.special_price%}#}
-{#                <p> Special Size: {{ menu.special_price }} Baht<br>#}
-{#            {% else %}#}
-{#                <p> Normal Size: {{ menu.normal_price }} Baht</p>#}
-{#            {% endif %}#}
-{#            <p>Order by: {{ item.order.user }}</p>#}
-{#            <p>Order time:{{ item.order_datetime }}</p>#}
-{#            <div><a href="{% url 'start_cook' shop=item.menu.menu_of.id order_item_id=item.id queue=item.this_queue%}">Start Cook</a></div>#}
-{#        </div>#}
-{#    {% endfor %}#}
-
-    <div id="page-container" class="container" style="min-height: 38vh;height: 100%">
-      <div id="content-wrap" style="background: white; border-radius: 25px; padding: 20px;margin: 80px">
-          <h1>Order of: {{ shop.shop_name }}</h1>
+    <div class="container" style="min-height: 38vh;">
+      <div style="background: white; border-radius: 25px; padding: 20px;margin: 80px">
+          <h1>Shop: {{ shop.shop_name }}</h1>
+          <hr>
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <h4 style="padding-top: 5px;margin-right: 20px">Shop status setting: </h4>
+            <span style="padding-top: 10px">Open:</span>
+            <label class="btn active">
+                <input class="tgl tgl-light" id="cb1" type="radio" name="options" required {% if shop.status == '01' %}checked{% endif %} onclick="savestatus('1')">
+                <label class="tgl-btn tgl-btn1" for="cb1"></label>
+            </label>
+            <span style="padding-top: 10px">Break:</span>
+            <label class="btn">
+                <input class="tgl tgl-light" id="cb2" type="radio" name="options" onclick="savestatus('3')" {% if shop.status == '03' %}checked{% endif %}>
+                <label class="tgl-btn tgl-btn2" for="cb2"></label>
+            </label>
+            <span style="padding-top: 10px">Close:</span>
+            <label class="btn">
+                <input class="tgl tgl-light" id="cb3" type="radio" name="options" onclick="savestatus('2')" {% if shop.status == '02' %}checked{% endif %}>
+                <label class="tgl-btn tgl-btn3" for="cb3"></label>
+            </label>
+          </div>
+            <div class="text-center" style="margin-bottom: 10px;">
+              <a href="{% url 'show_ingredient'%}" class="btn btn-info" style="width: 300px">manage ingredient</a>
+              <a href="{% url 'show_menu'%}" class="btn btn-info" style="width: 300px;margin-left: 20px">manage menu</a>
+            </div>
+            <hr>
+          <h2>Total queue(s): {{ shop.shopqueue.queue }}</h2>
           {% for item in order_item %}
           <hr style="margin-top: 3%">
           <p>Queue Number: {{ item.wait }}</p>
-          <P>Menu: {{ item.menu }}</P>
-            {% if item.price == item.menu.special_price%}
-                <p> Special Size: {{ item.menu.special_price }} บาท<br>
-            {% else %}
-                <p> Normal Size: {{ item.menu.normal_price }} บาท</p>
-            {% endif %}
-            <p>Order by: {{ item.order.user }}</p>
-              <p>Order time: {{ item.order_datetime }}</p>
-{#              <img src="{{ item.menu.menu_image.url }}">#}
+          <p>Menu: {{ item.menu }}</p>
+          {% if item.special_requirement %}
+              <p style="color: red">Special Requirement: {{ item.special_requirement }}</p>
+          {% endif %}
+          {% if item.price == item.menu.special_price%}
+            <p> Size: Special Size ({{ item.menu.special_price }} บาท)<br></p>
+          {% else %}
+            <p> Size: Normal Size ({{ item.menu.normal_price }} บาท)</p>
+          {% endif %}
+          <p>Order by: {{ item.order.user }}</p>
+          <p>Order time: {{ item.order_datetime }}</p>
               <hr>
               <div class="row" style="margin: 0 auto;">
                 <a href="{% url 'start_cook' shop=item.menu.menu_of.id order_item_id=item.id queue=item.this_queue%}" style="margin-right: 3%;"><button type="button" class="btn btn-warning centered" style="color: black; font-family: 'Kanit', sans-serif;">Start Cook</button></a>
@@ -308,5 +379,16 @@
           <!--- END CONTAINER -->
     </footer>
 
+    <script language="JavaScript">
+        function savestatus(n) {
+            if (n == 1) {
+                window.location.href = "{% url 'edit_status' status=1 %}"
+            } else if (n == 2) {
+                window.location.href = "{% url 'edit_status' status=2 %}"
+            } else {
+                window.location.href = "{% url 'edit_status' status=3 %}"
+            }
+        }
+    </script>
 </body>
 </html>
