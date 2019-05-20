@@ -5,6 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order: Status</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <style>
@@ -23,10 +24,13 @@
           background-image: url("/static/images/shop_bg.png");
           background-size: cover;
       }
+      p{
+          font-family: 'Kanit Light', sans-serif
+      }
       .top{
         z-index: 950;
-          background: white;
-        {#box-shadow: 0 2px 4px -1px rgba(0,0,0,0.10);#}
+        background: white;
+        box-shadow: 0 2px 4px -1px rgba(0,0,0,0.05);
         }
       .navbar-brand{
           margin-left: 3%;
@@ -193,6 +197,38 @@
           color: #ffefe1;
         }
 
+        @media (max-width: 1024px){
+            .heady h2{
+                text-align: center;
+                margin-bottom: 10% !important;
+            }
+            .heady p{
+                text-align: center;
+                color: black !important;
+                background-color: rgba(255,255,255,1);
+                border-radius: 10px;
+                padding: 2%;
+                margin-bottom: 10% !important;
+            }
+            .footer{
+                text-align: center;
+                padding: 0 !important;
+            }
+            .away{
+                display: none;
+            }
+            .copyright{
+                border-top: none;
+                padding: 0; margin: 15px;
+            }
+        }
+
+        @media (max-width: 480px){
+            .incon{
+                margin: 5% !important;
+            }
+        }
+
      </style>
 </head>
 <body>
@@ -200,7 +236,10 @@
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static "images/logo5.png" %}" width="auto" height="45" style="margin-top: 3%; margin-bottom: 3%" alt="">
         </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto" style="margin-right: 3%">
               <li class="nav-item active">
                 <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
@@ -224,7 +263,7 @@
         </div>
     </nav>
     <div class="container" style="min-height: 38vh;">
-      <div style="background: white; border-radius: 25px; padding: 20px;margin: 80px">
+      <div class="incon" style="background: white; border-radius: 25px; padding: 20px;margin: 80px; box-shadow: 0 2px 4px -1px rgba(0,0,0,0.1);">
           <h1>Order Status</h1>
           {% for item in order_item %}
           <hr style="margin-top: 3%">
@@ -239,7 +278,7 @@
           <p>Order Date&Time: {{ item.order_datetime }}</p>
               <hr>
               <div class="row" style="margin: 0 auto;">
-                <a href="{% url 'update_order' shop=item.menu.menu_of.id menu_id=item.menu.id queue=item.this_queue%}" style="margin-right: 3%;"><button type="button" class="btn btn-warning centered" style="color: black; font-family: 'Kanit', sans-serif;">update</button></a>
+                <a href="{% url 'update_order' queue=item.this_queue%}" style="margin-right: 3%;"><button type="button" class="btn btn-warning centered" style="color: black; font-family: 'Kanit', sans-serif;">update</button></a>
                 <a href="{% url 'remove_order' shop=item.menu.menu_of.id menu_id=item.menu.id queue=item.this_queue%}"><button type="button" class="btn btn-danger centered" style="color: black; font-family: 'Kanit', sans-serif">remove</button></a>
               </div>
           {% endfor %}
@@ -250,7 +289,7 @@
 
     <footer class="footer">
           <div class="container">
-            <div class="row">
+            <div class="row away">
               <div class="col-lg-4 col-sm-4 col-xs-12">
                 <div class="single_footer">
                   <h4>Services</h4>

@@ -5,6 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Ingredient</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <style>
@@ -26,7 +27,7 @@
       .top{
         z-index: 950;
           background: white;
-        {#box-shadow: 0 2px 4px -1px rgba(0,0,0,0.10);#}
+        box-shadow: 0 2px 4px -1px rgba(0,0,0,0.05);
         }
       .navbar-brand{
           margin-left: 3%;
@@ -262,20 +263,62 @@
             top: 0;
           }
           table tbody tr td:nth-child(1):before {
-            content: "Code";
+            content: "Date & Time";
           }
           table tbody tr td:nth-child(2):before {
-            content: "Stock";
+            content: "Shop";
           }
           table tbody tr td:nth-child(3):before {
-            content: "Cap";
+            content: "Menu";
           }
           table tbody tr td:nth-child(4):before {
-            content: "Inch";
+            content: "Price (บาท)";
           }
-          table tbody tr td:nth-child(5):before {
-            content: "Box Type";
-          }
+        }
+
+        td{
+            font-family: 'Kanit Light', sans-serif;
+        }
+
+        @media (max-width: 1024px){
+            .heady h2{
+                text-align: center;
+                margin-bottom: 10% !important;
+            }
+            .heady p{
+                text-align: center;
+                color: black !important;
+                background-color: rgba(255,255,255,1);
+                border-radius: 10px;
+                padding: 2%;
+                margin-bottom: 10% !important;
+            }
+            .footer{
+                text-align: center;
+                padding: 0 !important;
+            }
+            .away{
+                display: none;
+            }
+            .copyright{
+                border-top: none;
+                padding: 0; margin: 15px;
+            }
+        }
+
+        @media (max-width: 480px){
+            .incon{
+                margin: 5% !important;
+            }
+            .incon h1{
+                text-align: center;
+            }
+            .incon h3{
+                text-align: center;
+                box-shadow: 0 0px 1px 0px rgba(0,0,0,1); border-radius: 5px;
+                padding: 5px 5px;
+                margin: 15px auto
+            }
         }
 
      </style>
@@ -285,6 +328,9 @@
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static "images/logo5.png" %}" width="auto" height="45" style="margin-top: 3%; margin-bottom: 3%" alt="">
         </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto" style="margin-right: 3%">
               <li class="nav-item active">
@@ -310,9 +356,9 @@
     </nav>
 
     <div class="container" style="min-height: 38vh;">
-        <div style="background: white; border-radius: 25px; padding: 20px;margin: 80px">
-            <h1>Your Order History</h1>
-            <h3>Total Money You Spent: {{ history.total_price }}</h3>
+        <div class="incon" style="background: white; border-radius: 25px; padding: 20px;margin: 80px; box-shadow: 0 2px 4px -1px rgba(0,0,0,0.1);">
+            <h1 style="font-family: 'Kanit light', sans-serif">Your Order History</h1>
+            <h3 style="font-family: 'Kanit light', sans-serif">Total Money You Spent: {{ history.total_price }} บาท</h3>
             <table>
               <thead>
                 <tr>
@@ -332,30 +378,6 @@
                         <td>{{ item.price }}</td>
                     </tr>
                 {% endfor %}
-    {#            <tr>#}
-    {#              <td>CES-9000</td>#}
-    {#              <td>50mt</td>#}
-    {#              <td>9mm</td>#}
-    {#              <td>1/2"</td>#}
-    {#            </tr>#}
-    {#            <tr>#}
-    {#              <td>CES-9000</td>#}
-    {#              <td>50mt</td>#}
-    {#              <td>9mm</td>#}
-    {#              <td>1/2"</td>#}
-    {#            </tr>#}
-    {#            <tr>#}
-    {#              <td>CES-9000</td>#}
-    {#              <td>50mt</td>#}
-    {#              <td>9mm</td>#}
-    {#              <td>1/2"</td>#}
-    {#            </tr>#}
-    {#             <tr>#}
-    {#              <td>CES-9000</td>#}
-    {#              <td>50mt</td>#}
-    {#              <td>9mm</td>#}
-    {#              <td>1/2"</td>#}
-    {#            </tr>#}
               </tbody>
             </table>
         </div>
@@ -363,7 +385,7 @@
 
     <footer class="footer">
           <div class="container">
-            <div class="row">
+            <div class="row away">
               <div class="col-lg-4 col-sm-4 col-xs-12">
                 <div class="single_footer">
                   <h4>Services</h4>

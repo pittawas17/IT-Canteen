@@ -121,6 +121,9 @@ def activate(request, uidb64, token):
         user.userprofile.is_validated = True
         user.save()
         user.userprofile.save()
+        if user.groups.filter(name="shops").exists():
+            user.userprofile.shop.shop_validated = True
+            user.userprofile.shop.save()
         return redirect('home')
     else:
         return HttpResponse('Activation link is invalid!')

@@ -5,6 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Ingredient</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <style>
@@ -193,6 +194,32 @@
           color: #ffefe1;
         }
 
+        @media (max-width: 1024px){
+            .footer{
+                text-align: center;
+                padding: 0 !important;
+            }
+            .away{
+                display: none;
+            }
+            .copyright{
+                border-top: none;
+                padding: 0; margin: 15px;
+            }
+        }
+
+        @media (max-width: 480px){
+            .incon{
+                margin: 5% !important;
+            }
+            .incon h1{
+                text-align: center;
+            }
+            .butt{
+                text-align: center;
+            }
+        }
+
      </style>
 </head>
 <body>
@@ -200,7 +227,10 @@
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static "images/logo5.png" %}" width="auto" height="45" style="margin-top: 3%; margin-bottom: 3%" alt="">
         </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto" style="margin-right: 3%">
               <li class="nav-item active">
                 <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
@@ -225,7 +255,7 @@
     </nav>
 
     <div class="container" style="min-height: 38vh;">
-        <div style="background: white; border-radius: 25px; padding: 20px;margin: 80px">
+        <div class="incon" style="background: white; border-radius: 25px; padding: 20px;margin: 80px; box-shadow: 0 2px 4px -1px rgba(0,0,0,0.1);">
             <h1>Ingredient</h1>
             <a href="{% url 'create_ingredient' %}">
                 <button type="button" class="btn btn-secondary" style="color: whitesmoke; font-family: 'Kanit', sans-serif;width: 100%">
@@ -237,7 +267,7 @@
                 <hr>
                 <p>Ingredient Name: {{ item.ingredient_name }}</p>
                 <p>Status: {% if item.is_empty %}Out of order{% else %}Available{% endif %}</p>
-                <div>
+                <div class="butt">
                     <a href="{% url 'update_ingredient' ingre_id=item.id %}">
                         <button type="button" class="btn btn-warning centered" style="color: black; font-family: 'Kanit', sans-serif;">
                             update
@@ -256,7 +286,7 @@
 
     <footer class="footer">
           <div class="container">
-            <div class="row">
+            <div class="row away">
               <div class="col-lg-4 col-sm-4 col-xs-12">
                 <div class="single_footer">
                   <h4>Services</h4>

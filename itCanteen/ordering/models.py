@@ -46,7 +46,6 @@ class Shop(models.Model):
         (T19, "หลัง 18:00"),
     )
     status = models.CharField(max_length=2, choices=TYPES, default='01')
-    phone_number = models.CharField(max_length=10, null=True)
     contact1 = models.TextField(null=True)
     contact2 = models.TextField(null=True)
     open_time = models.CharField(max_length=2, null=True, choices=TIMES)
@@ -60,11 +59,13 @@ class Menu(models.Model):
     menu_name = models.CharField(max_length=100, null=False)
     is_daily_menu = models.BooleanField(null=False, default=False)
     description = models.TextField(max_length=200, null=True, blank=True)
-    normal_price = models.FloatField(null=False)
+    normal_price = models.FloatField(null=True, blank=True)
     special_price = models.FloatField(null=True, blank=True)
+    hot_price = models.FloatField(null=True, blank=True)
+    cold_price = models.FloatField(null=True, blank=True)
+    frappe_price = models.FloatField(null=True, blank=True)
     FOOD = "01"
     DRINK = "02"
-    SNACK = "03"
     TYPES = (
         (FOOD, 'อาหาร'),
         (DRINK, 'เครื่องดื่ม')

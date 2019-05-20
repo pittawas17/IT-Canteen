@@ -5,6 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Menu</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <style>
@@ -197,7 +198,7 @@
           margin-bottom: 10%;
         }
         .card{
-            margin-top: 5%;
+            margin-top: 10%;
         }
         .card-body{
             font-family: 'Kanit', sans-serif;
@@ -218,6 +219,38 @@
           background-color: #FF322C;
         }
 
+        @media (max-width: 1024px){
+            .heady h2{
+                text-align: center;
+                margin-bottom: 10% !important;
+            }
+            .heady p{
+                text-align: center;
+                color: black !important;
+                background-color: rgba(255,255,255,1);
+                border-radius: 10px;
+                padding: 2%;
+                margin-bottom: 10% !important;
+            }
+            .footer{
+                text-align: center;
+                padding: 0 !important;
+            }
+            .away{
+                display: none;
+            }
+            .copyright{
+                border-top: none;
+                padding: 0; margin: 15px;
+            }
+        }
+
+        @media (max-width: 480px){
+            .cardmar{
+                margin-bottom: 0 !important;
+            }
+        }
+
      </style>
 </head>
 <body>
@@ -225,7 +258,10 @@
     <a class="navbar-brand" href="{% url 'home' %}">
         <img src="{% static "images/logo5.png" %}" width="auto" height="45" style="margin-top: 3%; margin-bottom: 3%" alt="">
     </a>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto" style="margin-right: 3%">
             <li class="nav-item active">
                 <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
@@ -256,8 +292,8 @@
     <hr>
     <div class="notify danger" style="position: -webkit-sticky;position: sticky;top: 0;z-index: 3;padding-top: 10px; padding-bottom: 10px">
         {% fontawesome_icon 'frown' color='white'%}
-        <div class="text text-center" style="width: 100%">
-            <p> คำเตือน!! วัตถุดิบต่อไปนี้ไม่พร้อมสำหรับการปรุงอาหารในขณะนี้: </p>
+        <div class="text text-center" style="width: 100%;">
+            <p style="font-family: 'Kanit Light', sans-serif"> คำเตือน!! วัตถุดิบต่อไปนี้ไม่พร้อมสำหรับการปรุงอาหารในขณะนี้: </p>
             {% for item in ingredient %}
                 {%  if item.is_empty %}
                     <span style="color: white; font-family: 'Kanit Light', sans-serif; margin-right: 40px;">{{ item.ingredient_name }}</span>
@@ -267,7 +303,7 @@
     </div>
     <div class="card-deck" style="width: 100%; height:auto;">
         {% for menu in menu_list %}
-            <div class="col-4" style="margin-bottom: 50px;" >
+            <div class="col-md-3 col-sm-6 cardmar" style="margin-bottom: 50px;" >
                 <div class="card" style="width: 100%; height: 100%;">
                     {% if menu.menu_image %}
                         <img class="card-img-top" src="{{ menu.menu_image.url }}" alt="Card image cap" style="height: 250px">
@@ -279,11 +315,23 @@
                         <ul style="font-family: 'Kanit', sans-serif;">{{ menu.menu_name }}<br>
                             <small style="font-family: 'Kanit', sans-serif;">คำอธิบาย: {{ menu.description }}<hr></small>
                             <small style="font-family: 'Kanit', sans-serif;">
-                                {% if menu.special_price %}
-                                    ปกติ : {{ menu.normal_price }} บาท<br>
-                                    พิเศษ : {{ menu.special_price }} บาท<br>
-                                {% else %}
-                                    ปกติ : {{ menu.normal_price }} บาท
+                                {% if menu.menu_type == "01" %}
+                                    {% if menu.special_price %}
+                                        ปกติ : {{ menu.normal_price }} บาท<br>
+                                        พิเศษ : {{ menu.special_price }} บาท<br>
+                                    {% else %}
+                                        ปกติ : {{ menu.normal_price }} บาท
+                                    {% endif %}
+                                {% elif menu.menu_type == "02" %}
+                                    {% if menu.hot_price %}
+                                        ร้อน : {{ menu.hot_price }} บาท<br>
+                                    {% endif %}
+                                    {% if menu.cold_price %}
+                                        เย็น : {{ menu.cold_price }} บาท<br>
+                                    {% endif %}
+                                    {% if menu.frappe_price %}
+                                        ปั่น : {{ menu.frappe_price }} บาท<br>
+                                    {% endif %}
                                 {% endif %}
                             </small>
                         </ul>
@@ -338,7 +386,7 @@
 
 <div class="footer">
     <div class="container">
-        <div class="row">
+        <div class="row away">
             <div class="col-lg-4 col-sm-4 col-xs-12">
                 <div class="single_footer">
                     <h4>Services</h4>

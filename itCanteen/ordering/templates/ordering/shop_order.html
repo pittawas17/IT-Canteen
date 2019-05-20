@@ -6,6 +6,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order: Status</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <style>
@@ -247,6 +248,34 @@
         .tgl-light:checked + .tgl-btn3 {
           background: #da1f26;
         }
+        @media (max-width: 1024px){
+            .footer{
+                text-align: center;
+                padding: 0 !important;
+            }
+            .away{
+                display: none;
+            }
+            .copyright{
+                border-top: none;
+                padding: 0; margin: 15px;
+            }
+        }
+
+        @media (max-width: 480px){
+            .incon{
+                margin: 5% !important;
+            }
+            .incon h1{
+                text-align: center;
+            }
+            .butt{
+                width: 100%;
+            }
+            .bluebutt a{
+                margin-bottom: 5% !important;
+            }
+        }
      </style>
 </head>
 <body>
@@ -255,7 +284,10 @@
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static "images/logo5.png" %}" width="auto" height="45" style="margin-top: 3%; margin-bottom: 3%" alt="">
         </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto" style="margin-right: 3%">
               <li class="nav-item active">
                 <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
@@ -280,30 +312,39 @@
     </nav>
 
     <div class="container" style="min-height: 38vh;">
-      <div style="background: white; border-radius: 25px; padding: 20px;margin: 80px">
-          <h1>Shop: {{ shop.shop_name }}</h1>
+      <div class="incon" style="background: white; border-radius: 25px; padding: 20px;margin: 80px">
+          <h1>{{ shop.shop_name }}</h1>
           <hr>
-          <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <h4 style="padding-top: 5px;margin-right: 20px">Shop status setting: </h4>
-            <span style="padding-top: 10px">Open:</span>
+      <div class="row">
+          <h4 class="col-lg-3 col-md-12" style="padding-top: 5px;margin-right: 20px">สถานะ: </h4>
+          <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12 btn-group btn-group-toggle" data-toggle="buttons">
+            <span class="butt" style="padding-top: 10px">Open:</span>
             <label class="btn active">
                 <input class="tgl tgl-light" id="cb1" type="radio" name="options" required {% if shop.status == '01' %}checked{% endif %} onclick="savestatus('1')">
                 <label class="tgl-btn tgl-btn1" for="cb1"></label>
             </label>
-            <span style="padding-top: 10px">Break:</span>
+          </div>
+          <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12 btn-group btn-group-toggle" data-toggle="buttons">
+            <span class="butt" style="padding-top: 10px">Break:</span>
             <label class="btn">
                 <input class="tgl tgl-light" id="cb2" type="radio" name="options" onclick="savestatus('3')" {% if shop.status == '03' %}checked{% endif %}>
                 <label class="tgl-btn tgl-btn2" for="cb2"></label>
             </label>
-            <span style="padding-top: 10px">Close:</span>
+          </div>
+          <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12 btn-group btn-group-toggle" data-toggle="buttons">
+            <span class="butt" style="padding-top: 10px">Close:</span>
             <label class="btn">
                 <input class="tgl tgl-light" id="cb3" type="radio" name="options" onclick="savestatus('2')" {% if shop.status == '02' %}checked{% endif %}>
                 <label class="tgl-btn tgl-btn3" for="cb3"></label>
             </label>
           </div>
-            <div class="text-center" style="margin-bottom: 10px;">
-              <a href="{% url 'show_ingredient'%}" class="btn btn-info" style="width: 300px">manage ingredient</a>
-              <a href="{% url 'show_menu'%}" class="btn btn-info" style="width: 300px;margin-left: 20px">manage menu</a>
+      </div>
+            <div class="text-center row bluebutt" style="margin: 10px;">
+              <span class="col-lg-2"></span>
+              <a href="{% url 'show_ingredient'%}" class="btn btn-info col-lg-4 col-xs-12" style="">manage ingredient</a>
+              <span class="col-xs-12" style="margin-left: 2%"></span>
+              <a href="{% url 'show_menu'%}" class="btn btn-info col-lg-4 col-xs-12" style=";">manage menu</a>
+              <span class="col-lg-2"></span>
             </div>
             <hr>
           <h2>Total queue(s): {{ shop.shopqueue.queue }}</h2>
@@ -314,11 +355,22 @@
           {% if item.special_requirement %}
               <p style="color: red">Special Requirement: {{ item.special_requirement }}</p>
           {% endif %}
-          {% if item.price == item.menu.special_price%}
-            <p> Size: Special Size ({{ item.menu.special_price }} บาท)<br></p>
-          {% else %}
-            <p> Size: Normal Size ({{ item.menu.normal_price }} บาท)</p>
+          {% if item.menu.menu_type == "01" %}
+              {% if item.price == item.menu.special_price%}
+                <p> Size: Special Size ({{ item.menu.special_price }} บาท)</p>
+              {% else %}
+                <p> Size: Normal Size ({{ item.menu.normal_price }} บาท)</p>
+              {% endif %}
+          {% elif item.menu.menu_type == "02" %}
+              {% if item.price == item.menu.hot_price%}
+                <p> Type: Hot ({{ item.menu.hot_price }} บาท)</p>
+              {% elif item.price == item.menu.cold_price %}
+                <p> Type: Cold ({{ item.menu.cold_price }} บาท)</p>
+              {% elif item.price == item.menu.frappe_price %}
+                <p> Type: Frappe ({{ item.menu.frappe_price }} บาท)</p>
+              {% endif %}
           {% endif %}
+
           <p>Order by: {{ item.order.user }}</p>
           <p>Order time: {{ item.order_datetime }}</p>
               <hr>
@@ -331,7 +383,7 @@
 
     <footer class="footer">
           <div class="container">
-            <div class="row">
+            <div class="row away">
               <div class="col-lg-4 col-sm-4 col-xs-12">
                 <div class="single_footer">
                   <h4>Services</h4>

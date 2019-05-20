@@ -8,35 +8,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf_token" content="{{ csrf_token }}">
     <title>Update Menu</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <style>
         /*{#FONT#}*/
-      @import url('https://fonts.googleapis.com/css?family=Quicksand');
-      @import url('https://fonts.googleapis.com/css?family=Kanit');
-      *{
+        @import url('https://fonts.googleapis.com/css?family=Quicksand');
+        @import url('https://fonts.googleapis.com/css?family=Kanit');
+        *{
           font-family: 'Quicksand', sans-serif;
-      }
-      html,body{
+        }
+        html,body{
           margin:0;
           height:100%;
           background-color: #fff6ed;
-      }
-      body{
+        }
+        body{
           background-image: url("/static/images/normal2_bg.png");
           background-size: cover;
-      }
-      .top{
+        }
+        .top{
         z-index: 950;
           background: white;
         box-shadow: 0 2px 4px -1px rgba(0,0,0,0.05);
         }
-      .navbar-brand{
+        .navbar-brand{
           margin-left: 3%;
-      }
+        }
 
-      a,a:hover,a:focus,a:active {
+        a,a:hover,a:focus,a:active {
           text-decoration: none;
           outline: none;
         }
@@ -219,6 +220,53 @@
           background-color: #FF322C;
         }
 
+        @media (max-width: 1024px){
+            .footer{
+                text-align: center;
+                padding: 0 !important;
+            }
+            .away{
+                display: none;
+            }
+            .copyright{
+                border-top: none;
+                padding: 0; margin: 15px;
+            }
+        }
+
+        @media (max-width: 480px){
+            .incon{
+                margin: 5% !important;
+                height: auto;
+            }
+            .incon h1{
+                text-align: center;
+                {#font-size: 30px;#}
+            }
+        }
+
+        h5 {
+            overflow: hidden;
+            text-align: center;
+        }
+        h5:before,
+        h5:after {
+            background-color: #000;
+            content: "";
+            display: inline-block;
+            height: 1px;
+            position: relative;
+            vertical-align: middle;
+            width: 50%;
+        }
+        h5:before {
+            right: 0.5em;
+            margin-left: -50%;
+        }
+        h5:after {
+            left: 0.5em;
+            margin-right: -50%;
+        }
     </style>
 </head>
 
@@ -228,7 +276,10 @@
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static "images/logo5.png" %}" width="auto" height="45" style="margin-top: 3%; margin-bottom: 3%" alt="">
         </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto" style="margin-right: 3%">
               <li class="nav-item active">
                 <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
@@ -254,7 +305,7 @@
 
 
     <div class="container content">
-       <div class="card" style="width: 80%; height: 980px; margin: auto; padding-bottom: 600px">
+       <div class="incon" style="background: white; border-radius: 25px; width: 80%; margin: auto; padding-bottom: 2%; box-shadow: 0 2px 4px -1px rgba(0,0,0,0.1);">
           <div class="card-body">
             <h1>Add Menu</h1>
             {% block content %}
@@ -263,9 +314,17 @@
                 <div> {{ form.menu_name|as_crispy_field }}</div>
                 <div> {{ form.is_daily_menu|as_crispy_field }}</div>
                 <div>{{ form.description|as_crispy_field }}</div>
+                <div>{{ form.menu_type|as_crispy_field }}</div>
+                <h5 style="opacity: 0.5">Foods</h5>
+                <small style="color: red">** If your menu is food **</small>
                 <div>{{ form.normal_price|as_crispy_field }}</div>
                 <div>{{ form.special_price|as_crispy_field }}</div>
-                <div>{{ form.menu_type|as_crispy_field }}</div>
+                <h5 style="opacity: 0.5">Drinks</h5>
+                <small style="color: red">** If your menu is drink **</small>
+                <div>{{ form.hot_price|as_crispy_field }}</div>
+                <div>{{ form.cold_price|as_crispy_field }}</div>
+                <div>{{ form.frappe_price|as_crispy_field }}</div>
+                <hr>
                 <div>{{ form.menu_image|as_crispy_field }}</div>
                 <div class="text-center" style="width: 100%;margin-top: 30px;">
                     <a href="{% url 'show_menu' %}" class="btn btn-warning" style="width: 40%">Back</a>
@@ -302,7 +361,7 @@
 
     <div class="footer">
           <div class="container">
-            <div class="row">
+            <div class="row away">
               <div class="col-lg-4 col-sm-4 col-xs-12">
                 <div class="single_footer">
                   <h4>Services</h4>

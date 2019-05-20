@@ -23,7 +23,7 @@ def home(request):
         if user_type == "01":
             return redirect('show_shop')
         else:
-            return shop_order(request )
+            return shop_order(request)
     else:
         return redirect('show_shop')
 
@@ -60,13 +60,18 @@ def edit_order(request, menu_of, menu_id):
         if form.is_valid():
             order_datetime = datetime.datetime.now()
             add_queue(shop)
-            if menu.special_price:
-                if request.POST.get('size') == "01":
+            if menu.menu_type == "01":
+                if request.POST.get('food-size') == "01":
                     price = menu.normal_price
-                else:
+                elif request.POST.get('food-size') == "02":
                     price = menu.special_price
-            else:
-                price = menu.normal_price
+            elif menu.menu_type == "02":
+                if request.POST.get('drink-size') == "03":
+                    price = menu.hot_price
+                elif request.POST.get('drink-size') == "04":
+                    price = menu.cold_price
+                elif request.POST.get('drink-size') == "05":
+                    price = menu.frappe_price
             OrderItem.objects.create(
                 menu=menu,
                 queue=shop_queue,
@@ -85,7 +90,8 @@ def edit_order(request, menu_of, menu_id):
                 'shop': shop,
                 'menu': order_item.menu,
                 'price': order_item.price,
-                'orderDT': order_item.order_datetime
+                'orderDT': order_item.order_datetime,
+                'special_requirement': order_item.special_requirement
             })
             to_email = shop.shop_host.email
             email = EmailMessage(
@@ -151,39 +157,41 @@ def show_order_status(request):
 
 
 @login_required()
-def update_order(request, shop, menu_id, queue):
+def update_order(request, queue):
+    order_item = OrderItem.objects.get(this_queue=queue)
+    shop = order_item.queue.shop
+    menu = order_item.menu
     ingredient = Ingredient.objects.filter(ingredient_of=shop)
-    shop = Shop.objects.get(id=shop)
-    menu = Menu.objects.get(id=menu_id)
-    user = User.objects.get(id=request.user.id)
-    shop_queue = shop.shopqueue
     if request.method == 'POST':
-        form = forms.EditOrderModelForm(request.POST)
+        form = forms.EditOrderModelForm(request.POST, instance=order_item)
         if form.is_valid():
-            add_queue(shop)
-            if menu.special_price:
-                if request.POST.get('size') == "01":
+            if menu.menu_type == "01":
+                if request.POST.get('food-size') == "01":
                     price = menu.normal_price
-                else:
+                elif request.POST.get('food-size') == "02":
                     price = menu.special_price
-            else:
-                price = menu.normal_price
-            order_item = OrderItem.objects.get(this_queue=queue)
+            elif menu.menu_type == "02":
+                if request.POST.get('drink-size') == "03":
+                    price = menu.hot_price
+                elif request.POST.get('drink-size') == "04":
+                    price = menu.cold_price
+                elif request.POST.get('drink-size') == "05":
+                    price = menu.frappe_price
             order_item.special_requirement = form.cleaned_data.get('special_requirement')
             order_item.price = price
-            order_item.wait = order_item.this_queue - shop_queue.last_queue
             order_item.save()
+            form.save()
             return redirect('order_status')
     else:
-        form = EditOrderModelForm()
+        form = EditOrderModelForm(instance=order_item)
     context = {
         'shop': shop,
         'menu': menu,
         'forms': form,
-        'ingredient': ingredient
+        'ingredient': ingredient,
+        'order_item': order_item,
     }
-    return render(request, 'ordering/edit_order.html', context=context)
-
+    return render(request, 'ordering/update_order.html', context=context)
 
 @login_required()
 def show_order_history(request):

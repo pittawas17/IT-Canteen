@@ -8,6 +8,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf_token" content="{{ csrf_token }}">
     <title>Update Menu</title>
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
@@ -219,6 +220,39 @@
           background-color: #FF322C;
         }
 
+        @media (max-width: 1024px){
+            .heady h2{
+                text-align: center;
+                margin-bottom: 10% !important;
+            }
+            .heady p{
+                text-align: center;
+                color: black !important;
+                background-color: rgba(255,255,255,1);
+                border-radius: 10px;
+                padding: 2%;
+                margin-bottom: 10% !important;
+            }
+            .footer{
+                text-align: center;
+                padding: 0 !important;
+            }
+            .away{
+                display: none;
+            }
+            .copyright{
+                border-top: none;
+                padding: 0; margin: 15px;
+            }
+        }
+
+        @media (max-width: 480px){
+            .boxing h1{
+                text-align: center;
+                font-size: 30px;
+            }
+        }
+
     </style>
 </head>
 
@@ -228,7 +262,10 @@
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static "images/logo5.png" %}" width="auto" height="45" style="margin-top: 3%; margin-bottom: 3%" alt="">
         </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto" style="margin-right: 3%">
               <li class="nav-item active">
                 <a class="nav-link" href="{% url 'home' %}">Home<span class="sr-only">(current)</span></a>
@@ -252,26 +289,32 @@
         </div>
     </nav>
 
-
-    <div class="container content">
-       <div class="card" style="width: 80%; height: 980px; margin: auto; padding-bottom: 600px">
+    <div class="container content"style="min-height: 38vh;">
+       <div class="boxing" style="background:white; width: 90%; height: auto; margin: auto; border-radius: 10px; box-shadow: 0 2px 4px -1px rgba(0,0,0,0.1);">
           <div class="card-body">
-            <div class="split left">
-                <h1 style="margin-bottom: 50px;">Update Menu</h1>
+            <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <h1 style="margin-bottom: 2%; ">Update Menu</h1>
             {% if menu.menu_image %}
-                 <img class="shadow" src="{{ menu.menu_image.url }}" width="480" height="480">
+                 <img src="{{ menu.menu_image.url }}" width="100%" height="auto">
             {% endif %}
             </div>
-            <div class="split right">
+            <div class="col-lg-6 col-md-12">
                 {% block content %}
                 <form method="post" enctype="multipart/form-data" action="{% url 'update_menu' menu.id %}">
                     {% csrf_token %}
                     <div> {{ form.menu_name|as_crispy_field }}</div>
                     <div> {{ form.is_daily_menu|as_crispy_field }}</div>
                     <div>{{ form.description|as_crispy_field }}</div>
-                    <div>{{ form.normal_price|as_crispy_field }}</div>
-                    <div>{{ form.special_price|as_crispy_field }}</div>
                     <div>{{ form.menu_type|as_crispy_field }}</div>
+                    {% if menu.menu_type == "01" %}
+                        <div>{{ form.normal_price|as_crispy_field }}</div>
+                        <div>{{ form.special_price|as_crispy_field }}</div>
+                    {% elif menu.menu_type == "02" %}
+                        <div>{{ form.hot_price|as_crispy_field }}</div>
+                        <div>{{ form.cold_price|as_crispy_field }}</div>
+                        <div>{{ form.frappe_price|as_crispy_field }}</div>
+                    {% endif %}
                     <div>{{ form.menu_image|as_crispy_field }}</div>
                     <div class="text-center" style="width: 100%;margin-top: 30px;">
                         <a href="{% url 'show_menu' %}" class="btn btn-warning" style="width: 40%">Back</a>
@@ -279,6 +322,7 @@
                     </div>
                 </form>
                 {% endblock %}
+            </div>
             </div>
           </div>
         </div>
@@ -309,7 +353,7 @@
 
     <div class="footer">
           <div class="container">
-            <div class="row">
+            <div class="row away">
               <div class="col-lg-4 col-sm-4 col-xs-12">
                 <div class="single_footer">
                   <h4>Services</h4>

@@ -19,11 +19,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
+import ordering
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^main/', include('ordering.urls')),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^account-controller/', include('accounts.urls')),
+    url(r'^$', ordering.views.home)
 ]
 
 if settings.DEBUG:
