@@ -23,7 +23,7 @@ import ordering
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^main/', include('ordering.urls')),
+    url(r'^', include('ordering.urls')),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^account-controller/', include('accounts.urls')),
     url(r'^$', ordering.views.home)
